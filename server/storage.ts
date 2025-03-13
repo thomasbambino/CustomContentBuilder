@@ -478,18 +478,18 @@ export class DatabaseStorage implements IStorage {
 
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await this.db.select().from(users).where(({ id: userId }) => userId.equals(id));
-    return user;
+    const result = await this.client`SELECT * FROM users WHERE id = ${id}`;
+    return result.length > 0 ? result[0] : undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await this.db.select().from(users).where(({ username: user }) => user.equals(username));
-    return user;
+    const result = await this.client`SELECT * FROM users WHERE username = ${username}`;
+    return result.length > 0 ? result[0] : undefined;
   }
   
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await this.db.select().from(users).where(({ email: userEmail }) => userEmail.equals(email));
-    return user;
+    const result = await this.client`SELECT * FROM users WHERE email = ${email}`;
+    return result.length > 0 ? result[0] : undefined;
   }
 
   async createUser(user: InsertUser): Promise<User> {
@@ -657,7 +657,21 @@ export class DatabaseStorage implements IStorage {
   
   // Settings operations
   async getSettings(): Promise<Setting | undefined> {
-    const results = await this.db.select().from(settings);
+    const results = await this.client`
+      SELECT 
+        id, 
+        company_name as "companyName", 
+        logo_path as "logoPath", 
+        primary_color as "primaryColor", 
+        theme,
+        radius,
+        site_title as "siteTitle",
+        site_description as "siteDescription",
+        favicon,
+        updated_at as "updatedAt"
+      FROM settings
+      LIMIT 1
+    `;
     if (results.length === 0) return undefined;
     return results[0];
   }
@@ -688,10 +702,20 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getContentByType(type: string): Promise<Content[]> {
-    return await this.db
-      .select()
-      .from(contents)
-      .where(({ type: contentType, isActive }) => contentType.equals(type).and(isActive.equals(true)));
+    return await this.client`
+      SELECT 
+        id,
+        type,
+        title,
+        subtitle,
+        content,
+        image_path as "imagePath",
+        "order",
+        is_active as "isActive",
+        updated_at as "updatedAt"
+      FROM contents 
+      WHERE type = ${type} AND is_active = true
+    `;
   }
   
   async createContent(content: InsertContent): Promise<Content> {
