@@ -657,42 +657,63 @@ export class DatabaseStorage implements IStorage {
   
   // Settings operations
   async getSettings(): Promise<Setting | undefined> {
+    // Get all settings from the key-value table
     const results = await this.client`
-      SELECT 
-        id, 
-        company_name as "companyName", 
-        logo_path as "logoPath", 
-        primary_color as "primaryColor", 
-        theme,
-        radius,
-        site_title as "siteTitle",
-        site_description as "siteDescription",
-        favicon,
-        updated_at as "updatedAt"
+      SELECT id, key, value, "updatedBy", "updatedAt"
       FROM settings
-      LIMIT 1
     `;
+    
     if (results.length === 0) return undefined;
-    return results[0];
+    
+    // Transform key-value pairs into a single settings object
+    const settingsObj: any = {
+      id: 1,
+      updatedAt: null
+    };
+    
+    for (const row of results) {
+      settingsObj[row.key] = row.value;
+      // Use the most recent updatedAt for the whole object
+      if (!settingsObj.updatedAt || (row.updatedAt && row.updatedAt > settingsObj.updatedAt)) {
+        settingsObj.updatedAt = row.updatedAt;
+      }
+    }
+    
+    return settingsObj as Setting;
   }
   
   async updateSettings(settingsUpdate: Partial<Setting>): Promise<Setting | undefined> {
-    const existingSettings = await this.getSettings();
+    // We need to convert the object to key-value pairs and update them individually
+    const now = new Date();
+    const userId = 1; // Default admin user
     
-    if (existingSettings) {
-      const [updatedSettings] = await this.db
-        .update(settings)
-        .set({ ...settingsUpdate, updatedAt: new Date() })
-        .where(({ id }) => id.equals(existingSettings.id))
-        .returning();
-      return updatedSettings;
-    } else {
-      const [newSettings] = await this.db
-        .insert(settings)
-        .values({ ...settingsUpdate })
-        .returning();
-      return newSettings;
+    // Remove internal properties that should not be stored as keys
+    const { id, updatedAt, ...updateData } = settingsUpdate;
+    
+    // For each key-value pair in the update, update or insert into the settings table
+    for (const [key, value] of Object.entries(updateData)) {
+      // Check if this key already exists
+      const existing = await this.client`
+        SELECT id FROM settings WHERE key = ${key}
+      `;
+      
+      if (existing.length > 0) {
+        // Update existing setting
+        await this.client`
+          UPDATE settings 
+          SET value = ${value}, "updatedBy" = ${userId}, "updatedAt" = ${now}
+          WHERE key = ${key}
+        `;
+      } else {
+        // Insert new setting
+        await this.client`
+          INSERT INTO settings (key, value, "updatedBy", "updatedAt")
+          VALUES (${key}, ${value}, ${userId}, ${now})
+        `;
+      }
     }
+    
+    return this.getSettings();
   }
   
   // Content operations
@@ -712,7 +733,7 @@ export class DatabaseStorage implements IStorage {
         "imagePath",
         "order",
         "isActive",
-        updated_at as "updatedAt"
+        "updatedAt"
       FROM contents 
       WHERE type = ${type} AND "isActive" = true
     `;
