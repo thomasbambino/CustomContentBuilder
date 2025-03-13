@@ -178,7 +178,7 @@ async function main() {
 
   // Create admin user
   console.log('Creating admin user...');
-  const hashedPassword = await hashPassword('admin');
+  const hashedPassword = await hashPassword('admin123');
   
   try {
     const insertResult = await sql`
@@ -189,7 +189,7 @@ async function main() {
     `;
     
     if (insertResult.length > 0) {
-      console.log('Created admin user: admin / admin');
+      console.log('Created admin user: admin / admin123');
     } else {
       console.log('Admin user already exists');
     }
