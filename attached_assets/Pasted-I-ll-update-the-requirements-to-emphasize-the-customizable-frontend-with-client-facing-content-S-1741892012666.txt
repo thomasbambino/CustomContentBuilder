@@ -1,0 +1,211 @@
+I'll update the requirements to emphasize the customizable frontend with client-facing content:
+
+# SD Tech Pros Client Portal
+
+## Project Description
+
+SD Tech Pros Client Portal is a comprehensive business management web application for a technology consulting company. The application integrates with Freshbooks for accounting and client management, providing a unified platform for admins to manage clients, projects, invoices, and inquiries. Clients can access their projects, view invoices, and track progress through a secure portal.
+
+The application serves two main user types:
+1. **Administrators**: Manage clients, projects, inquiries, users, and system settings
+2. **Clients**: View their projects, invoices, and communicate with the company
+
+## Key Features and Requirements
+
+### Public-Facing Website with CMS Capabilities
+- **Fully customizable public frontend**:
+  - Hero section with configurable images, text, and call-to-action buttons
+  - Service cards/sections to showcase company offerings
+  - About us/team section with editable content
+  - Testimonials section with client reviews
+  - Contact information and form
+  - Blog or news section (optional)
+- **Content management system** for all public-facing content
+- Admin interface to edit all text, images, and layout components
+- No coding required for content updates
+- Mobile-responsive design for all public pages
+- SEO optimization features for all public content
+
+### Branding and Customization
+- Admin-configurable company branding throughout the entire site
+- Custom logo upload and management
+- Company name/title customization
+- Editable site metadata (title, description, favicon)
+- Customizable color schemes based on brand identity
+- Theme settings (light/dark mode toggle)
+- Email template customization for client communications
+- Custom domain support
+- Font selection and typography controls
+- Custom CSS injection option for advanced users
+
+### Authentication and User Management
+- User roles: admin, customer, pending
+- Role-based access control throughout the application
+- Secure login, registration, and password management
+- Temporary password generation for new users
+- Password reset functionality for admins
+
+### Freshbooks Integration
+- OAuth authentication with Freshbooks API
+- Client synchronization (read/write)
+- Project synchronization (read/write)
+- Invoice synchronization (read)
+- Connection management with refresh capability
+
+### Client Management
+- Create, view, update clients
+- Client profile view with contact details
+- Associate projects with clients
+- View client activity
+
+### Project Management
+- Create, view, update projects
+- Project details with description, due dates, budget
+- Project progress tracking
+- Document upload and management
+- Project notes and comments
+
+### Invoice Management
+- View invoices by project and client
+- Track invoice status (pending, paid, overdue)
+- Display payment history
+
+### Customer Inquiry System
+- Inquiry submission form for potential clients
+- Admin review and approval workflow
+- Automatic client creation from approved inquiries
+
+### Admin Dashboard
+- Overview of system statistics
+- Recent activity tracking
+- Pending inquiry management
+- User management interface
+
+### Database Schema Requirements
+- **Users**: Store user information with role-based permissions
+- **Clients**: Client records synchronized with Freshbooks
+- **Projects**: Project information with client relationships
+- **Invoices**: Invoice data linked to projects and clients
+- **Inquiries**: Track potential client inquiries
+- **Documents**: Store project-related files and metadata
+- **Settings**: System and branding configuration
+- **Audit Logs**: Track important system actions
+- **Branding Assets**: Store logos and branding elements
+- **Content**: Store editable website content (services, pages, etc.)
+
+### Reporting and Analytics
+- Integration with Google Analytics or similar platform
+- Event tracking for key user actions
+- Custom dashboard metrics for administrators
+- Usage statistics for system optimization
+- API usage monitoring for Freshbooks integration
+
+### Technical Requirements
+
+#### Frontend
+- React with TypeScript
+- React Router (or alternative like Wouter)
+- React Query for state management
+- Form validation with Zod
+- Component library with ShadCN UI (Radix UI primitives)
+- Responsive design with Tailwind CSS
+- Dynamic theme configuration with CSS variables
+- Content editor with WYSIWYG capabilities
+
+#### Backend
+- Node.js with Express
+- PostgreSQL database with Drizzle ORM
+- RESTful API design
+- Session-based authentication
+- Secure password handling with hashing
+- API integration with Freshbooks
+- File storage for branding assets (logo, images)
+- Content management API endpoints
+
+#### Security Requirements
+- HTTPS/TLS for all connections
+- Password hashing with secure algorithms
+- Input validation for all forms
+- Role-based access control
+- Protected API endpoints
+- CSRF protection
+- Secure session management
+
+#### Performance Requirements
+- Page load times under 2 seconds for main application screens
+- API response times under 500ms for standard operations
+- Support for minimum 100 concurrent users
+- Efficient database queries to handle large client datasets
+- Lazy loading of components and resources
+- Proper caching for static assets and API responses
+- Optimized image loading for branding elements
+
+#### Deployment
+- Production and development environments
+- Environment variable management
+- Database migrations
+
+## API Integrations
+The application must integrate with:
+- Freshbooks API for accounting and client management
+- Google Analytics for usage tracking
+- Email service for notifications (optional)
+
+## User Experience Requirements
+- Clean, professional interface
+- Intuitive navigation system
+- Dashboard for quick access to relevant information
+- Responsive design for mobile and desktop
+- Proper loading states and error handling
+- Toast notifications for user feedback
+- Consistent branding throughout the application
+- White-label capability for resellers/partners
+
+## Admin Settings and Configuration
+- Branding management dashboard
+- Theme configuration interface
+- Logo and image upload functionality
+- Meta information editor
+- Email template customization interface
+- User-friendly color picker for theme adjustments
+- Preview functionality for branding changes
+- Version history of branding changes
+- Content management interface for public website
+- Service offering editor with drag-and-drop functionality
+
+## Documentation Requirements
+- **User Documentation**:
+  - Admin user guide with screenshots
+  - Client user guide for portal navigation
+  - System configuration documentation
+  - Content management guide for website editors
+  - FAQ section for common tasks
+  - Video tutorials for key features
+  
+- **Technical Documentation**:
+  - System architecture overview
+  - Database schema documentation
+  - Deployment instructions
+  - Environment configuration guide
+  - Third-party integration details
+  - Troubleshooting guide
+
+- **API Documentation**:
+  - OpenAPI/Swagger documentation for all endpoints
+  - Authentication flow documentation
+  - Rate limiting and error handling explanations
+  - Example requests and responses
+  - Integration code samples
+
+## Development Guidelines
+- Component-based architecture with reusable UI components
+- Separation of concerns in code organization
+- Type safety with TypeScript
+- Consistent error handling
+- API request abstraction layer
+- Proper code documentation
+- Unit testing for critical components
+- Theme system using CSS variables for dynamic styling
+- Asset optimization for logos and brand images
+
+This project requires a developer experienced in full-stack development with React, Node.js, and third-party API integrations who can implement a secure, responsive, and user-friendly client portal system with flexible branding capabilities and a fully customizable public-facing website.
