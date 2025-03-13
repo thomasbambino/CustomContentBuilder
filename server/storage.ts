@@ -86,7 +86,7 @@ export interface IStorage {
   updateApiConnection(provider: string, connection: Partial<ApiConnection>): Promise<ApiConnection | undefined>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: any;
 }
 
 export class MemStorage implements IStorage {
@@ -101,7 +101,7 @@ export class MemStorage implements IStorage {
   private activities: Map<number, Activity>;
   private apiConnections: Map<string, ApiConnection>;
   
-  sessionStore: session.SessionStore;
+  sessionStore: any;
   
   private userCurrentId: number;
   private clientCurrentId: number;
@@ -470,9 +470,9 @@ export class DatabaseStorage implements IStorage {
       }),
     };
 
-    this.sessionStore = new PostgresSessionStore({ 
-      pool,
-      createTableIfMissing: true 
+    // Use MemoryStore instead of PostgresSessionStore for sessions
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // Prune expired entries every 24h
     });
   }
 
@@ -709,12 +709,12 @@ export class DatabaseStorage implements IStorage {
         title,
         subtitle,
         content,
-        image_path as "imagePath",
+        "imagePath",
         "order",
-        is_active as "isActive",
+        "isActive",
         updated_at as "updatedAt"
       FROM contents 
-      WHERE type = ${type} AND is_active = true
+      WHERE type = ${type} AND "isActive" = true
     `;
   }
   
