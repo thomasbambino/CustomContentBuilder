@@ -483,6 +483,8 @@ export class DatabaseStorage implements IStorage {
     
     // Map the result to the expected User type
     const user = result[0];
+    console.log('Found user by id:', user);
+    
     return {
       id: user.id,
       username: user.username,
@@ -490,8 +492,8 @@ export class DatabaseStorage implements IStorage {
       name: user.name,
       email: user.email,
       role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      createdAt: user["createdat"] || user["createdAt"] || new Date(),
+      updatedAt: user["updatedat"] || user["updatedAt"] || new Date()
     };
   }
 
@@ -501,6 +503,8 @@ export class DatabaseStorage implements IStorage {
     
     // Map the result to the expected User type
     const user = result[0];
+    console.log('Found user:', user);
+    
     return {
       id: user.id,
       username: user.username,
@@ -508,8 +512,8 @@ export class DatabaseStorage implements IStorage {
       name: user.name,
       email: user.email,
       role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      createdAt: user["createdat"] || user["createdAt"] || new Date(),
+      updatedAt: user["updatedat"] || user["updatedAt"] || new Date()
     };
   }
   
@@ -519,6 +523,8 @@ export class DatabaseStorage implements IStorage {
     
     // Map the result to the expected User type
     const user = result[0];
+    console.log('Found user by email:', user);
+    
     return {
       id: user.id,
       username: user.username,
@@ -526,8 +532,8 @@ export class DatabaseStorage implements IStorage {
       name: user.name,
       email: user.email,
       role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      createdAt: user["createdat"] || user["createdAt"] || new Date(),
+      updatedAt: user["updatedat"] || user["updatedAt"] || new Date()
     };
   }
 
