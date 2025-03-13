@@ -140,12 +140,12 @@ export const insertContentSchema = createInsertSchema(contents)
 // Activity log
 export const activities = pgTable("activities", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id),
+  userId: integer("userId").references(() => users.id),
   action: text("action").notNull(),
   details: text("details"),
-  entityType: text("entity_type"), // project, client, invoice, etc.
-  entityId: integer("entity_id"),
-  createdAt: timestamp("created_at").defaultNow(),
+  entityType: text("entityType"), // project, client, invoice, etc.
+  entityId: integer("entityId"),
+  createdAt: timestamp("createdAt").defaultNow(),
 });
 
 export const insertActivitySchema = createInsertSchema(activities)
