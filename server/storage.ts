@@ -12,8 +12,12 @@ import {
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import connectPg from "connect-pg-simple";
 
 const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   // User operations
@@ -448,4 +452,321 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  private db: ReturnType<typeof drizzle>;
+  private client: ReturnType<typeof postgres>;
+  sessionStore: any; // Fix the type issue with session.SessionStore
+
+  constructor() {
+    // Initialize the database connection
+    this.client = postgres(process.env.DATABASE_URL as string, { max: 10 });
+    this.db = drizzle(this.client);
+    
+    const pool = {
+      query: (text: string, params: any[]) => this.client.unsafe(text, params),
+      connect: () => Promise.resolve({
+        query: (text: string, params: any[]) => this.client.unsafe(text, params),
+        release: () => {}
+      }),
+    };
+
+    this.sessionStore = new PostgresSessionStore({ 
+      pool,
+      createTableIfMissing: true 
+    });
+  }
+
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await this.db.select().from(users).where(({ id: userId }) => userId.equals(id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await this.db.select().from(users).where(({ username: user }) => user.equals(username));
+    return user;
+  }
+  
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await this.db.select().from(users).where(({ email: userEmail }) => userEmail.equals(email));
+    return user;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const [newUser] = await this.db.insert(users).values(user).returning();
+    return newUser;
+  }
+  
+  async updateUser(id: number, userUpdate: Partial<User>): Promise<User | undefined> {
+    const [updatedUser] = await this.db
+      .update(users)
+      .set({ ...userUpdate, updatedAt: new Date() })
+      .where(({ id: userId }) => userId.equals(id))
+      .returning();
+    return updatedUser;
+  }
+  
+  async getAllUsers(): Promise<User[]> {
+    return await this.db.select().from(users);
+  }
+  
+  // Client operations
+  async getClient(id: number): Promise<Client | undefined> {
+    const [client] = await this.db.select().from(clients).where(({ id: clientId }) => clientId.equals(id));
+    return client;
+  }
+  
+  async getClientByUserId(userId: number): Promise<Client | undefined> {
+    const [client] = await this.db.select().from(clients).where(({ userId: clientUserId }) => clientUserId.equals(userId));
+    return client;
+  }
+  
+  async createClient(client: InsertClient): Promise<Client> {
+    const [newClient] = await this.db.insert(clients).values(client).returning();
+    return newClient;
+  }
+  
+  async updateClient(id: number, clientUpdate: Partial<Client>): Promise<Client | undefined> {
+    const [updatedClient] = await this.db
+      .update(clients)
+      .set({ ...clientUpdate, updatedAt: new Date() })
+      .where(({ id: clientId }) => clientId.equals(id))
+      .returning();
+    return updatedClient;
+  }
+  
+  async getAllClients(): Promise<Client[]> {
+    return await this.db.select().from(clients);
+  }
+  
+  // Project operations
+  async getProject(id: number): Promise<Project | undefined> {
+    const [project] = await this.db.select().from(projects).where(({ id: projectId }) => projectId.equals(id));
+    return project;
+  }
+  
+  async getProjectsByClientId(clientId: number): Promise<Project[]> {
+    return await this.db.select().from(projects).where(({ clientId: projClientId }) => projClientId.equals(clientId));
+  }
+  
+  async createProject(project: InsertProject): Promise<Project> {
+    const [newProject] = await this.db.insert(projects).values(project).returning();
+    return newProject;
+  }
+  
+  async updateProject(id: number, projectUpdate: Partial<Project>): Promise<Project | undefined> {
+    const [updatedProject] = await this.db
+      .update(projects)
+      .set({ ...projectUpdate, updatedAt: new Date() })
+      .where(({ id: projectId }) => projectId.equals(id))
+      .returning();
+    return updatedProject;
+  }
+  
+  async getAllProjects(): Promise<Project[]> {
+    return await this.db.select().from(projects);
+  }
+  
+  // Invoice operations
+  async getInvoice(id: number): Promise<Invoice | undefined> {
+    const [invoice] = await this.db.select().from(invoices).where(({ id: invoiceId }) => invoiceId.equals(id));
+    return invoice;
+  }
+  
+  async getInvoicesByClientId(clientId: number): Promise<Invoice[]> {
+    return await this.db.select().from(invoices).where(({ clientId: invClientId }) => invClientId.equals(clientId));
+  }
+  
+  async getInvoicesByProjectId(projectId: number): Promise<Invoice[]> {
+    return await this.db.select().from(invoices).where(({ projectId: invProjectId }) => invProjectId.equals(projectId));
+  }
+  
+  async createInvoice(invoice: InsertInvoice): Promise<Invoice> {
+    const [newInvoice] = await this.db.insert(invoices).values(invoice).returning();
+    return newInvoice;
+  }
+  
+  async updateInvoice(id: number, invoiceUpdate: Partial<Invoice>): Promise<Invoice | undefined> {
+    const [updatedInvoice] = await this.db
+      .update(invoices)
+      .set({ ...invoiceUpdate, updatedAt: new Date() })
+      .where(({ id: invoiceId }) => invoiceId.equals(id))
+      .returning();
+    return updatedInvoice;
+  }
+  
+  async getAllInvoices(): Promise<Invoice[]> {
+    return await this.db.select().from(invoices);
+  }
+  
+  // Document operations
+  async getDocument(id: number): Promise<Document | undefined> {
+    const [document] = await this.db.select().from(documents).where(({ id: docId }) => docId.equals(id));
+    return document;
+  }
+  
+  async getDocumentsByProjectId(projectId: number): Promise<Document[]> {
+    return await this.db.select().from(documents).where(({ projectId: docProjectId }) => docProjectId.equals(projectId));
+  }
+  
+  async getDocumentsByClientId(clientId: number): Promise<Document[]> {
+    return await this.db.select().from(documents).where(({ clientId: docClientId }) => docClientId.equals(clientId));
+  }
+  
+  async createDocument(document: InsertDocument): Promise<Document> {
+    const [newDocument] = await this.db.insert(documents).values(document).returning();
+    return newDocument;
+  }
+  
+  async deleteDocument(id: number): Promise<boolean> {
+    const result = await this.db.delete(documents).where(({ id: docId }) => docId.equals(id));
+    return true; // Assuming operation was successful
+  }
+  
+  async getAllDocuments(): Promise<Document[]> {
+    return await this.db.select().from(documents);
+  }
+  
+  // Inquiry operations
+  async getInquiry(id: number): Promise<Inquiry | undefined> {
+    const [inquiry] = await this.db.select().from(inquiries).where(({ id: inquiryId }) => inquiryId.equals(id));
+    return inquiry;
+  }
+  
+  async createInquiry(inquiry: InsertInquiry): Promise<Inquiry> {
+    const [newInquiry] = await this.db.insert(inquiries).values(inquiry).returning();
+    return newInquiry;
+  }
+  
+  async updateInquiry(id: number, inquiryUpdate: Partial<Inquiry>): Promise<Inquiry | undefined> {
+    const [updatedInquiry] = await this.db
+      .update(inquiries)
+      .set({ ...inquiryUpdate, updatedAt: new Date() })
+      .where(({ id: inquiryId }) => inquiryId.equals(id))
+      .returning();
+    return updatedInquiry;
+  }
+  
+  async getPendingInquiries(): Promise<Inquiry[]> {
+    return await this.db.select().from(inquiries).where(({ status }) => status.equals('pending'));
+  }
+  
+  async getAllInquiries(): Promise<Inquiry[]> {
+    return await this.db.select().from(inquiries);
+  }
+  
+  // Settings operations
+  async getSettings(): Promise<Setting | undefined> {
+    const results = await this.db.select().from(settings);
+    if (results.length === 0) return undefined;
+    return results[0];
+  }
+  
+  async updateSettings(settingsUpdate: Partial<Setting>): Promise<Setting | undefined> {
+    const existingSettings = await this.getSettings();
+    
+    if (existingSettings) {
+      const [updatedSettings] = await this.db
+        .update(settings)
+        .set({ ...settingsUpdate, updatedAt: new Date() })
+        .where(({ id }) => id.equals(existingSettings.id))
+        .returning();
+      return updatedSettings;
+    } else {
+      const [newSettings] = await this.db
+        .insert(settings)
+        .values({ ...settingsUpdate })
+        .returning();
+      return newSettings;
+    }
+  }
+  
+  // Content operations
+  async getContent(id: number): Promise<Content | undefined> {
+    const [content] = await this.db.select().from(contents).where(({ id: contentId }) => contentId.equals(id));
+    return content;
+  }
+  
+  async getContentByType(type: string): Promise<Content[]> {
+    return await this.db
+      .select()
+      .from(contents)
+      .where(({ type: contentType, isActive }) => contentType.equals(type).and(isActive.equals(true)));
+  }
+  
+  async createContent(content: InsertContent): Promise<Content> {
+    const [newContent] = await this.db.insert(contents).values(content).returning();
+    return newContent;
+  }
+  
+  async updateContent(id: number, contentUpdate: Partial<Content>): Promise<Content | undefined> {
+    const [updatedContent] = await this.db
+      .update(contents)
+      .set({ ...contentUpdate, updatedAt: new Date() })
+      .where(({ id: contentId }) => contentId.equals(id))
+      .returning();
+    return updatedContent;
+  }
+  
+  async deleteContent(id: number): Promise<boolean> {
+    const result = await this.db.delete(contents).where(({ id: contentId }) => contentId.equals(id));
+    return true; // Assuming operation was successful
+  }
+  
+  async getAllContents(): Promise<Content[]> {
+    return await this.db.select().from(contents);
+  }
+  
+  // Activity operations
+  async createActivity(activity: InsertActivity): Promise<Activity> {
+    const [newActivity] = await this.db.insert(activities).values(activity).returning();
+    return newActivity;
+  }
+  
+  async getRecentActivities(limit: number): Promise<Activity[]> {
+    return await this.db
+      .select()
+      .from(activities)
+      .orderBy(({ createdAt }) => createdAt, 'desc')
+      .limit(limit);
+  }
+  
+  // API Connection operations
+  async getApiConnection(provider: string): Promise<ApiConnection | undefined> {
+    const [apiConnection] = await this.db
+      .select()
+      .from(apiConnections)
+      .where(({ provider: apiProvider }) => apiProvider.equals(provider));
+    return apiConnection;
+  }
+  
+  async updateApiConnection(provider: string, connectionUpdate: Partial<ApiConnection>): Promise<ApiConnection | undefined> {
+    const existingConnection = await this.getApiConnection(provider);
+    
+    if (existingConnection) {
+      const [updatedConnection] = await this.db
+        .update(apiConnections)
+        .set({ ...connectionUpdate, updatedAt: new Date() })
+        .where(({ id }) => id.equals(existingConnection.id))
+        .returning();
+      return updatedConnection;
+    } else if (connectionUpdate.provider) {
+      const [newConnection] = await this.db
+        .insert(apiConnections)
+        .values({ 
+          provider: connectionUpdate.provider, 
+          accessToken: connectionUpdate.accessToken || null,
+          refreshToken: connectionUpdate.refreshToken || null,
+          expiresAt: connectionUpdate.expiresAt || null,
+          isActive: connectionUpdate.isActive !== undefined ? connectionUpdate.isActive : true,
+        })
+        .returning();
+      return newConnection;
+    }
+    
+    return undefined;
+  }
+}
+
+// Use DatabaseStorage instead of MemStorage to connect to the PostgreSQL database
+export const storage = new DatabaseStorage();

@@ -29,8 +29,14 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  // Set a secure session secret
+  if (!process.env.SESSION_SECRET) {
+    process.env.SESSION_SECRET = "sd-tech-pros-secret-key-" + Math.random().toString(36).substring(2, 15);
+    console.log('Warning: SESSION_SECRET not set, using a generated one');
+  }
+  
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || "sd-tech-pros-secret-key",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
