@@ -479,17 +479,56 @@ export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     const result = await this.client`SELECT * FROM users WHERE id = ${id}`;
-    return result.length > 0 ? result[0] : undefined;
+    if (result.length === 0) return undefined;
+    
+    // Map the result to the expected User type
+    const user = result[0];
+    return {
+      id: user.id,
+      username: user.username,
+      password: user.password,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     const result = await this.client`SELECT * FROM users WHERE username = ${username}`;
-    return result.length > 0 ? result[0] : undefined;
+    if (result.length === 0) return undefined;
+    
+    // Map the result to the expected User type
+    const user = result[0];
+    return {
+      id: user.id,
+      username: user.username,
+      password: user.password,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
   }
   
   async getUserByEmail(email: string): Promise<User | undefined> {
     const result = await this.client`SELECT * FROM users WHERE email = ${email}`;
-    return result.length > 0 ? result[0] : undefined;
+    if (result.length === 0) return undefined;
+    
+    // Map the result to the expected User type
+    const user = result[0];
+    return {
+      id: user.id,
+      username: user.username,
+      password: user.password,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
   }
 
   async createUser(user: InsertUser): Promise<User> {
