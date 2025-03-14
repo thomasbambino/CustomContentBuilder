@@ -10,6 +10,7 @@ type ThemeProviderState = {
   companyName: string;
   theme: "light" | "dark";
   logoUrl: string | null;
+  faviconUrl: string | null;
 };
 
 const initialState: ThemeProviderState = {

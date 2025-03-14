@@ -11,7 +11,9 @@ export default function DynamicFavicon({ defaultFavicon = '/favicon.ico' }: Dyna
   useEffect(() => {
     // Update the favicon when settings are loaded
     if (!isLoading && settings) {
-      const faviconPath = settings.faviconPath || defaultFavicon;
+      // Get the favicon path from settings, using the correct property name
+      // The server returns 'favicon' field, not 'faviconPath'
+      const faviconPath = settings.favicon || defaultFavicon;
       
       // Get existing links
       const existingLink = document.querySelector('link[rel="icon"]');
