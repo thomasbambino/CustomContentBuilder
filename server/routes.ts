@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
+import { setupAuth, comparePasswords, hashPassword } from "./auth";
 import { 
   insertClientSchema, 
   insertProjectSchema,
@@ -977,6 +977,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(updatedConnection);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // User Profile Update endpoint
+  app.patch("/api/user/:id", isAuthenticated, async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // Ensure the user can only update their own profile unless they're an admin
+      if (req.user?.id !== userId && req.user?.role !== 'admin') {
+        return res.status(403).json({ message: "Forbidden: You can only update your own profile" });
+      }
+      
+      // Extract the fields we want to allow updating
+      const { fullName, email, username } = req.body;
+      const updateData: any = {};
+      
+      if (fullName) updateData.name = fullName;
+      if (email) updateData.email = email;
+      if (username) updateData.username = username;
+      
+      const updatedUser = await storage.updateUser(userId, updateData);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Create activity record
+      await storage.createActivity({
+        userId: req.user?.id,
+        action: "Profile Updated",
+        details: `User ${updatedUser.username} updated their profile`,
+        entityType: "user",
+        entityId: updatedUser.id
+      });
+      
+      // Don't send the password in the response
+      const { password, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Change Password endpoint
+  app.post("/api/user/change-password", isAuthenticated, async (req, res, next) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+      
+      const user = await storage.getUser(req.user?.id as number);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Verify current password
+      const isPasswordValid = await comparePasswords(currentPassword, user.password);
+      
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Current password is incorrect" });
+      }
+      
+      // Hash the new password
+      const hashedPassword = await hashPassword(newPassword);
+      
+      // Update user with new password
+      const updatedUser = await storage.updateUser(user.id, { 
+        password: hashedPassword 
+      });
+      
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Failed to update password" });
+      }
+      
+      // Create activity record
+      await storage.createActivity({
+        userId: user.id,
+        action: "Password Changed",
+        details: `User ${user.username} changed their password`,
+        entityType: "user",
+        entityId: user.id
+      });
+      
+      res.json({ message: "Password updated successfully" });
     } catch (error) {
       next(error);
     }
