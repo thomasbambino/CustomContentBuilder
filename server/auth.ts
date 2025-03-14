@@ -5,7 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as SelectUser, InsertUser } from "@shared/schema";
+import { User as SelectUser, InsertUser, User } from "@shared/schema";
 
 declare global {
   namespace Express {
@@ -76,9 +76,17 @@ export function setupAuth(app: Express) {
     new LocalStrategy(async (username, password, done) => {
       try {
         const user = await storage.getUserByUsername(username);
+        
+        // Check if user exists and password is correct
         if (!user || !(await comparePasswords(password, user.password))) {
           return done(null, false, { message: "Invalid username or password" });
         }
+        
+        // Check if the user's account is disabled
+        if (user.status === 'disabled') {
+          return done(null, false, { message: "Your account has been disabled. Please contact an administrator." });
+        }
+        
         return done(null, user);
       } catch (error) {
         return done(error);
@@ -90,6 +98,16 @@ export function setupAuth(app: Express) {
   passport.deserializeUser(async (id: number, done) => {
     try {
       const user = await storage.getUser(id);
+      
+      // If user not found or account is disabled, reject the session
+      if (!user) {
+        return done(null, false);
+      }
+      
+      if (user.status === 'disabled') {
+        return done(null, false);
+      }
+      
       done(null, user);
     } catch (error) {
       done(error);
@@ -122,7 +140,8 @@ export function setupAuth(app: Express) {
         password: await hashPassword(password),
         email,
         name,
-        role
+        role,
+        status: 'active' // Set default status to active
       };
       
       const user = await storage.createUser(userData);
@@ -150,11 +169,11 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: any, user: SelectUser | false, info: { message?: string }) => {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: info?.message || "Authentication failed" });
       
-      req.login(user, async (err) => {
+      req.login(user, async (err: any) => {
         if (err) return next(err);
         
         // Create activity log
