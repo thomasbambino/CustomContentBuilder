@@ -43,21 +43,35 @@ export default function Navbar() {
   
   // Use an effect to handle the data separately from the query
   useEffect(() => {
-    console.log("Public navbar received settings:", settings);
+    console.log("⭐ Public navbar received settings:", settings);
+    console.log("⭐ Original settings from API:", fetchedSettings);
     
     if (settings.logoPath) {
-      console.log("Public navbar logo path:", settings.logoPath);
-      setLogoUrl(settings.logoPath);
+      console.log("⭐ Public navbar logo path:", settings.logoPath);
+      
+      // Try directly using the full URL for debugging
+      const fullUrl = `http://localhost:5000${settings.logoPath}`;
+      console.log("⭐ Trying full URL:", fullUrl);
+      
+      // Set the logo URL with the full URL for testing
+      setLogoUrl(fullUrl);
       
       // Try to preload the image to check if it's accessible
       const img = new Image();
-      img.onload = () => console.log("Public navbar preload logo success:", settings.logoPath);
-      img.onerror = (e) => console.error("Public navbar preload logo failed:", e);
-      img.src = settings.logoPath;
+      img.onload = () => console.log("⭐ Public navbar preload logo SUCCESS:", fullUrl);
+      img.onerror = (e) => console.error("⭐ Public navbar preload logo FAILED:", e);
+      img.src = fullUrl;
+      
+      // Also try the original path
+      const img2 = new Image();
+      img2.onload = () => console.log("⭐ Original path preload SUCCESS:", settings.logoPath);
+      img2.onerror = (e) => console.error("⭐ Original path preload FAILED:", e);
+      img2.src = settings.logoPath;
     } else {
+      console.log("⭐ No logo path found in settings");
       setLogoUrl(null);
     }
-  }, [settings.logoPath]);
+  }, [settings.logoPath, fetchedSettings]);
 
   // Close menu when clicking outside
   useEffect(() => {
