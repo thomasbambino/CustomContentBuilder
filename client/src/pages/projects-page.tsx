@@ -351,7 +351,7 @@ export default function ProjectsPage() {
                       <FormLabel>Status</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value || "planning"}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -382,8 +382,11 @@ export default function ProjectsPage() {
                           min="0" 
                           max="100" 
                           placeholder="Enter progress percentage" 
-                          {...field}
+                          value={field.value || 0} 
                           onChange={(e) => field.onChange(parseInt(e.target.value))}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />
@@ -528,7 +531,14 @@ export default function ProjectsPage() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter project description" {...field} />
+                      <Textarea 
+                        placeholder="Enter project description" 
+                        value={field.value || ''} 
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
