@@ -1,38 +1,59 @@
-import { useEffect } from 'react';
-import { useSettings } from '@/hooks/use-settings';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 interface DynamicFaviconProps {
   defaultFavicon?: string;
 }
 
+// Define interface for public settings data
+interface PublicSettings {
+  companyName?: string;
+  logoPath?: string;
+  primaryColor?: string;
+  theme?: string;
+  radius?: number;
+  siteTitle?: string;
+  siteDescription?: string;
+  favicon?: string;
+}
+
 export default function DynamicFavicon({ defaultFavicon = '/favicon.ico' }: DynamicFaviconProps) {
-  const { settings, isLoading } = useSettings();
+  // Direct API query to ensure this works even on public pages
+  const { data: settings = {} as PublicSettings } = useQuery<PublicSettings>({
+    queryKey: ['/api/settings/public'],
+  });
+
+  // Use state to keep track of current favicon
+  const [currentFavicon, setCurrentFavicon] = useState<string | null>(null);
 
   useEffect(() => {
-    // Update the favicon when settings are loaded
-    if (!isLoading && settings) {
-      // Get the favicon path from settings, using the correct property name
-      // The server returns 'favicon' field, not 'faviconPath'
-      let faviconPath = settings.favicon || defaultFavicon;
+    // Function to update favicon
+    const updateFavicon = (faviconPath: string) => {
+      if (!faviconPath) return;
       
       // Ensure the favicon path is absolute
-      if (faviconPath && !faviconPath.startsWith('http') && !faviconPath.startsWith('/')) {
-        faviconPath = `/${faviconPath}`;
+      let absolutePath = faviconPath;
+      if (!absolutePath.startsWith('http') && !absolutePath.startsWith('/')) {
+        absolutePath = `/${absolutePath}`;
       }
       
       // Add timestamp to bust cache
-      // This forces the browser to load the latest version of the favicon
       const timestamp = Date.now();
-      const faviconWithTimestamp = faviconPath.includes('?') 
-        ? `${faviconPath}&t=${timestamp}` 
-        : `${faviconPath}?t=${timestamp}`;
+      const faviconWithTimestamp = absolutePath.includes('?') 
+        ? `${absolutePath}&t=${timestamp}` 
+        : `${absolutePath}?t=${timestamp}`;
       
-      // Get existing links
-      const existingLink = document.querySelector('link[rel="icon"]');
-      const existingAppleLink = document.querySelector('link[rel="apple-touch-icon"]');
+      // Only update if the favicon has changed (ignoring timestamp)
+      const baseFavicon = absolutePath.split('?')[0];
+      const currentBaseFavicon = currentFavicon ? currentFavicon.split('?')[0] : null;
       
-      // If favicon path is available, update it
-      if (faviconPath) {
+      if (baseFavicon !== currentBaseFavicon) {
+        setCurrentFavicon(faviconWithTimestamp);
+        
+        // Get existing links
+        const existingLink = document.querySelector('link[rel="icon"]');
+        const existingAppleLink = document.querySelector('link[rel="apple-touch-icon"]');
+        
         console.log('Setting favicon to:', faviconWithTimestamp);
         
         // Update or create favicon link
@@ -55,8 +76,16 @@ export default function DynamicFavicon({ defaultFavicon = '/favicon.ico' }: Dyna
           document.head.appendChild(appleLink);
         }
       }
+    };
+
+    // Either use the settings favicon or fall back to default
+    if (settings.favicon) {
+      updateFavicon(settings.favicon);
+    } else if (!currentFavicon) {
+      // Only set default if we haven't set a favicon yet
+      updateFavicon(defaultFavicon);
     }
-  }, [settings, isLoading, defaultFavicon]);
+  }, [settings, defaultFavicon, currentFavicon]);
 
   // This component doesn't render anything visible
   return null;
