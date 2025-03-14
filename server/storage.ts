@@ -693,7 +693,20 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getPendingInquiries(): Promise<Inquiry[]> {
-    return await this.db.select().from(inquiries).where(({ status }) => status.equals('pending'));
+    return await this.client`
+      SELECT 
+        id,
+        name,
+        email,
+        phone,
+        message,
+        status,
+        created_at AS "createdAt",
+        updated_at AS "updatedAt"
+      FROM inquiries 
+      WHERE status = 'pending'
+      ORDER BY created_at DESC
+    `;
   }
   
   async getAllInquiries(): Promise<Inquiry[]> {

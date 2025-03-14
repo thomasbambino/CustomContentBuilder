@@ -187,12 +187,12 @@ export default function ClientDocumentsPage() {
                 />
               </div>
 
-              <Select value={projectFilter?.toString() || ""} onValueChange={(value) => setProjectFilter(value ? parseInt(value) : null)}>
+              <Select value={projectFilter?.toString() || "all"} onValueChange={(value) => setProjectFilter(value === "all" ? null : parseInt(value))}>
                 <SelectTrigger className="sm:w-48">
                   <SelectValue placeholder="Filter by project" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Projects</SelectItem>
+                  <SelectItem value="all">All Projects</SelectItem>
                   {projects.map(project => (
                     <SelectItem key={project.id} value={project.id.toString()}>
                       {project.name}
