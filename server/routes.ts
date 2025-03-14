@@ -38,6 +38,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
   
+  // Debug endpoint to check file accessibility - no auth required for debugging
+  app.get('/api/debug/file-check', async (req, res) => {
+    try {
+      const filePath = req.query.path as string;
+      if (!filePath) {
+        return res.status(400).json({ message: "No file path provided" });
+      }
+      
+      // Remove leading slash if present
+      const cleanPath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
+      
+      // Create absolute paths
+      const clientPublicPath = path.join(process.cwd(), 'client/public', cleanPath);
+      const serverPublicPath = path.join(process.cwd(), 'server/public', cleanPath);
+      
+      // Check if files exist
+      const clientFileExists = fs.existsSync(clientPublicPath);
+      const serverFileExists = fs.existsSync(serverPublicPath);
+      
+      // Check file sizes if they exist
+      let clientFileSize = 0;
+      let serverFileSize = 0;
+      
+      if (clientFileExists) {
+        const clientStats = fs.statSync(clientPublicPath);
+        clientFileSize = clientStats.size;
+      }
+      
+      if (serverFileExists) {
+        const serverStats = fs.statSync(serverPublicPath);
+        serverFileSize = serverStats.size;
+      }
+      
+      res.json({
+        requestedPath: filePath,
+        cleanPath,
+        clientPublicPath,
+        serverPublicPath,
+        clientFileExists,
+        serverFileExists,
+        clientFileSize,
+        serverFileSize
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error checking file", error: String(error) });
+    }
+  });
+  
   // Helper function to get file extension from MIME type
   const getExtensionFromMimeType = (mimeType: string): string => {
     const mimeToExt: Record<string, string> = {
