@@ -25,6 +25,7 @@ import AdminContentEditor from "@/pages/admin/content-editor";
 import AdminBranding from "@/pages/admin/branding";
 import AdminApiConnections from "@/pages/admin/api-connections";
 import AdminProfile from "@/pages/admin/profile";
+import AdminUsers from "@/pages/admin/users";
 
 // Client pages
 import ClientDashboard from "@/pages/client/dashboard";
@@ -53,6 +54,7 @@ function Router() {
       <ProtectedRoute path="/admin/content-editor" role="admin" component={AdminContentEditor} />
       <ProtectedRoute path="/admin/branding" role="admin" component={AdminBranding} />
       <ProtectedRoute path="/admin/api-connections" role="admin" component={AdminApiConnections} />
+      <ProtectedRoute path="/admin/users" role="admin" component={AdminUsers} />
       <ProtectedRoute path="/admin/profile" role="admin" component={AdminProfile} />
       
       {/* Client routes */}
