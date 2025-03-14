@@ -8,7 +8,9 @@ import {
   insertInquirySchema,
   insertDocumentSchema,
   insertContentSchema,
-  InsertInquiry
+  insertUserSchema,
+  InsertInquiry,
+  InsertUser
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
