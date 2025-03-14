@@ -13,7 +13,7 @@ import {
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
+import { eq, and, desc, asc } from 'drizzle-orm';
 import postgres from 'postgres';
 import connectPg from "connect-pg-simple";
 
@@ -768,13 +768,13 @@ export class DatabaseStorage implements IStorage {
         const setValues = columns.map(col => `${col.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)} = ?`).join(', ');
         const values = Object.values(dataToUpdate);
         
-        await this.client.query(`UPDATE ${tableName} SET ${setValues} WHERE id = ?`, [...values, existingSettings.id]);
+        await this.client(`UPDATE ${tableName} SET ${setValues} WHERE id = $${values.length + 1}`, [...values, existingSettings.id]);
       } else {
         // Insert new settings with defaults
-        await this.client.query(`
+        await this.client(`
           INSERT INTO settings (
             company_name, logo_path, primary_color, theme, radius, site_title, site_description, favicon, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         `, [
           updateData.companyName || 'SD Tech Pros',
           updateData.logoPath || null,
@@ -846,7 +846,7 @@ export class DatabaseStorage implements IStorage {
     return await this.db
       .select()
       .from(activities)
-      .orderBy(({ createdAt }) => createdAt, 'desc')
+      .orderBy(desc(activities.createdAt))
       .limit(limit);
   }
   
