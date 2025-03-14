@@ -29,7 +29,11 @@ export default function DashboardPage() {
   // Get recent activities - limit to 5 for dashboard
   const { data: activities } = useQuery<Activity[]>({
     queryKey: ["/api/activities"],
-    queryData: { limit: 5 },
+    queryFn: async () => {
+      const response = await fetch(`/api/activities?limit=5`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    },
   });
 
   return (

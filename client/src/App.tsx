@@ -20,6 +20,7 @@ import AdminClients from "@/pages/admin/clients";
 import AdminProjects from "@/pages/admin/projects";
 import AdminInvoices from "@/pages/admin/invoices";
 import AdminInquiries from "@/pages/admin/inquiries";
+import AdminActivities from "@/pages/admin/activities";
 import AdminContentEditor from "@/pages/admin/content-editor";
 import AdminBranding from "@/pages/admin/branding";
 import AdminApiConnections from "@/pages/admin/api-connections";
@@ -47,6 +48,7 @@ function Router() {
       <ProtectedRoute path="/admin/projects" role="admin" component={AdminProjects} />
       <ProtectedRoute path="/admin/invoices" role="admin" component={AdminInvoices} />
       <ProtectedRoute path="/admin/inquiries" role="admin" component={AdminInquiries} />
+      <ProtectedRoute path="/admin/activities" role="admin" component={AdminActivities} />
       <ProtectedRoute path="/admin/content-editor" role="admin" component={AdminContentEditor} />
       <ProtectedRoute path="/admin/branding" role="admin" component={AdminBranding} />
       <ProtectedRoute path="/admin/api-connections" role="admin" component={AdminApiConnections} />
