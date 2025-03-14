@@ -14,7 +14,8 @@ import {
   Settings,
   Bell,
   Menu,
-  X
+  X,
+  User
 } from "lucide-react";
 import { useTheme } from "@/components/theme/theme-provider";
 import { cn } from "@/lib/utils";
@@ -72,6 +73,11 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
       name: "Settings",
       path: "/admin/settings",
       icon: <Settings className="mr-3 h-5 w-5" />
+    },
+    {
+      name: "My Profile",
+      path: "/admin/profile",
+      icon: <User className="mr-3 h-5 w-5" />
     }
   ];
 
@@ -186,7 +192,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
               
               <div className="relative flex items-center gap-3">
                 <Avatar>
-                  <AvatarImage src={null} alt={user?.name || user?.username} />
+                  <AvatarImage src="" alt={user?.name || user?.username} />
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     {getInitials(user?.name || user?.username || '')}
                   </AvatarFallback>
