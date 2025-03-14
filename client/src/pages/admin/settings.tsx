@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import AdminSidebar from "@/components/dashboard/admin-sidebar";
-import AdminHeader from "@/components/dashboard/admin-header";
+import AppLayout from "@/components/layout/AppLayout";
 import { useSettings } from "@/hooks/use-settings";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
