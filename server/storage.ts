@@ -554,14 +554,42 @@ export class DatabaseStorage implements IStorage {
   async updateUser(id: number, userUpdate: Partial<User>): Promise<User | undefined> {
     console.log(`Updating user with ID: ${id}, Update data:`, userUpdate);
     try {
-      const [updatedUser] = await this.db
-        .update(users)
-        .set({ ...userUpdate, updatedAt: new Date() })
-        .where(({ id: userId }) => userId.equals(id))
-        .returning();
+      // First verify the user exists
+      const existingUser = await this.getUser(id);
+      if (!existingUser) {
+        console.log(`User with id ${id} not found`);
+        return undefined;
+      }
       
-      console.log('Updated user result:', updatedUser);
-      return updatedUser;
+      // Use the raw SQL approach since we're having issues with the fluent API
+      const result = await this.client`
+        UPDATE users 
+        SET 
+          name = ${userUpdate.name || existingUser.name},
+          email = ${userUpdate.email || existingUser.email},
+          username = ${userUpdate.username || existingUser.username},
+          updated_at = ${new Date()}
+        WHERE id = ${id}
+        RETURNING *
+      `;
+      
+      if (result && result.length > 0) {
+        const updatedUser = {
+          id: result[0].id,
+          username: result[0].username,
+          password: result[0].password,
+          name: result[0].name,
+          email: result[0].email,
+          role: result[0].role,
+          createdAt: result[0].created_at,
+          updatedAt: result[0].updated_at
+        };
+        console.log('Updated user result:', updatedUser);
+        return updatedUser;
+      }
+      
+      console.log('No user updated');
+      return undefined;
     } catch (error) {
       console.error('Error updating user:', error);
       throw error;
