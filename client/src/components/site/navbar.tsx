@@ -79,10 +79,10 @@ export default function Navbar() {
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
             {/* Logo or Company Name */}
-            <Link href="/" className="flex items-center space-x-2">
-              {logoSrc ? (
+            <Link href="/" className="flex items-center">
+              {logoUrl ? (
                 <img 
-                  src={logoSrc} 
+                  src={`${logoUrl}?t=${Date.now()}`}
                   className="h-10 w-auto" 
                   alt={companyName}
                   onError={(e) => {
@@ -90,7 +90,7 @@ export default function Navbar() {
                     // Don't hide the image, fall back to the text
                     setLogoSrc(null);
                   }} 
-                  onLoad={() => console.log("Logo loaded successfully in navbar:", logoSrc)}
+                  onLoad={() => console.log("Logo loaded successfully in site navbar:", logoUrl)}
                 />
               ) : (
                 <span className="text-primary font-bold text-xl">{companyName}</span>

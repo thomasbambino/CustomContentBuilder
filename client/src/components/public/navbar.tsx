@@ -6,13 +6,25 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
 
+// Define the settings interface
+interface PublicSettings {
+  companyName?: string;
+  logoPath?: string;
+  primaryColor?: string;
+  theme?: string;
+  radius?: number;
+  siteTitle?: string;
+  siteDescription?: string;
+  favicon?: string;
+}
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
   
   // Get company settings
-  const { data: settings } = useQuery({
+  const { data: settings = { logoPath: null, companyName: 'SD Tech Pros' } } = useQuery<PublicSettings>({
     queryKey: ['/api/settings/public'],
   });
 
@@ -31,16 +43,24 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            {/* Logo */}
-            {settings?.logoPath ? (
-              <img src={settings.logoPath} className="h-8 w-8 rounded" alt="Company Logo" />
-            ) : (
-              <div className="h-8 w-8 bg-primary rounded flex items-center justify-center text-white font-bold">
-                {settings?.companyName?.charAt(0) || 'S'}
-              </div>
-            )}
-            {/* Company Name */}
-            <span className="text-primary-700 font-bold text-xl">{settings?.companyName || 'SD Tech Pros'}</span>
+            {/* Logo with cache busting */}
+            <Link href="/" className="flex items-center">
+              {settings?.logoPath ? (
+                <img 
+                  src={`${settings.logoPath}?t=${Date.now()}`} 
+                  className="h-10 w-auto" 
+                  alt={settings?.companyName || 'Company Logo'}
+                  onError={(e) => {
+                    console.error("Error loading logo in public navbar:", e);
+                    // Set a fallback to text logo
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                  onLoad={() => console.log("Logo loaded successfully in public navbar:", settings.logoPath)}
+                />
+              ) : (
+                <span className="text-primary-700 font-bold text-xl">{settings?.companyName || 'SD Tech Pros'}</span>
+              )}
+            </Link>
           </div>
 
           {/* Navigation Links - Desktop */}
