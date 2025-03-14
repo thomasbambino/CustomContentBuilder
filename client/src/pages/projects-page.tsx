@@ -117,7 +117,7 @@ export default function ProjectsPage() {
       description: "",
       status: "planning",
       progress: 0,
-      budget: "",
+      budget: 0, // Changed to number type
       clientId: undefined,
       startDate: undefined,
       dueDate: undefined
@@ -130,9 +130,9 @@ export default function ProjectsPage() {
     defaultValues: {
       name: "",
       description: "",
-      status: "",
+      status: "planning", // Set a default non-empty value
       progress: 0,
-      budget: ""
+      budget: 0 // Changed to number type
     }
   });
 
@@ -328,7 +328,14 @@ export default function ProjectsPage() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter project description" {...field} />
+                      <Textarea 
+                        placeholder="Enter project description" 
+                        value={field.value || ''} 
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -432,7 +439,15 @@ export default function ProjectsPage() {
                   <FormItem>
                     <FormLabel>Budget</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter project budget" {...field} />
+                      <Input 
+                        type="number"
+                        placeholder="Enter project budget" 
+                        value={field.value?.toString() || ''} 
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : 0)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -529,7 +544,7 @@ export default function ProjectsPage() {
                       <FormLabel>Status</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        value={field.value}
+                        value={field.value || "planning"}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -615,7 +630,15 @@ export default function ProjectsPage() {
                   <FormItem>
                     <FormLabel>Budget</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter project budget" {...field} />
+                      <Input 
+                        type="number"
+                        placeholder="Enter project budget" 
+                        value={field.value?.toString() || ''} 
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : 0)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

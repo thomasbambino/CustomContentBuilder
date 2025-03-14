@@ -618,7 +618,7 @@ export default function ClientMessagesPage() {
                             <SelectValue placeholder="Select a project" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">None</SelectItem>
+                            <SelectItem value="none">None</SelectItem>
                             {projects.map((project) => (
                               <SelectItem key={project.id} value={project.id.toString()}>
                                 {project.name}
