@@ -306,7 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const projects = await storage.getAllProjects();
       const invoices = await storage.getAllInvoices();
       const pendingInquiries = await storage.getPendingInquiries();
-      const recentActivities = await storage.getRecentActivities(10);
+      const recentActivities = await storage.getRecentActivities(5);
       
       // Calculate stats
       const activeProjects = projects.filter(p => p.status === "in_progress").length;

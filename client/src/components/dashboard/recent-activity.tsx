@@ -93,7 +93,7 @@ export default function RecentActivity({ activities = [] }: { activities?: any[]
               icon={getIcon(activity.type || 'default')}
               title={activity.title || activity.action || 'Activity'}
               description={activity.description || activity.details || ''}
-              time={activity.time || formatTime(activity.createdAt)}
+              time={activity.time || (activity.createdAt ? formatTime(activity.createdAt) : '')}
             />
           ))}
         </div>

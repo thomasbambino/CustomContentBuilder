@@ -26,10 +26,10 @@ export default function DashboardPage() {
     queryKey: ["/api/inquiries/pending"],
   });
 
-  // Get recent activities
+  // Get recent activities - limit to 5 for dashboard
   const { data: activities } = useQuery<Activity[]>({
     queryKey: ["/api/activities"],
-    queryData: { limit: 10 },
+    queryData: { limit: 5 },
   });
 
   return (
