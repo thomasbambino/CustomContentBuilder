@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import AdminSidebar from "@/components/dashboard/admin-sidebar";
-import AdminHeader from "@/components/dashboard/admin-header";
+import AppLayout from "@/components/layout/AppLayout";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -315,13 +314,17 @@ export default function AdminUsers() {
   };
 
   return (
-    <div className="flex h-screen bg-secondary-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <AdminHeader title="Users" />
+    <AppLayout>
+      <div className="py-6 px-4 sm:px-6 lg:px-8">
+        <div className="md:flex md:items-center md:justify-between mb-6">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+              User Management
+            </h1>
+          </div>
+        </div>
         
-        <main className="flex-1 overflow-y-auto bg-secondary-50 p-6">
+        <main>
           <Card>
             <CardHeader className="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
               <CardTitle>User Management</CardTitle>
@@ -577,6 +580,6 @@ export default function AdminUsers() {
           </Card>
         </main>
       </div>
-    </div>
+    </AppLayout>
   );
 }
