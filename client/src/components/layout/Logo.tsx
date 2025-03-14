@@ -14,27 +14,49 @@ export function Logo({ className = "h-10 w-auto", fallbackText = "SD Tech Pros",
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    // Log the entire settings object for debugging
+    console.log("📊 Logo component - settings:", settings);
+    
     if (settings?.logoPath) {
       // Create a fully qualified URL including the protocol and host
       const baseUrl = window.location.origin;
-      const fullLogoUrl = `${baseUrl}${settings.logoPath}`;
+      // Add cache-busting timestamp
+      const timestamp = Date.now();
+      const fullLogoUrl = `${baseUrl}${settings.logoPath}?t=${timestamp}`;
       console.log("🔄 Logo component - setting logo URL:", fullLogoUrl);
       
-      // Test image loading before setting
-      const img = new Image();
-      img.onload = () => {
-        console.log("✅ Logo component - image preloaded successfully");
-        setLogoSrc(fullLogoUrl);
-        setIsLoading(false);
-        setError(false);
-      };
-      img.onerror = (e) => {
-        console.error("❌ Logo component - preload error:", e);
-        setError(true);
-        setIsLoading(false);
-        setLogoSrc(null);
-      };
-      img.src = fullLogoUrl;
+      // Try to fetch the image directly first
+      fetch(fullLogoUrl)
+        .then(response => {
+          console.log(`🔍 Logo fetch response: ${response.status} ${response.statusText}`, 
+            { contentType: response.headers.get('content-type') });
+          
+          if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.status}`);
+          }
+          
+          // After successful fetch, try to load the image
+          const img = new Image();
+          img.onload = () => {
+            console.log("✅ Logo component - image preloaded successfully");
+            setLogoSrc(fullLogoUrl);
+            setIsLoading(false);
+            setError(false);
+          };
+          img.onerror = (e) => {
+            console.error("❌ Logo component - preload error after successful fetch:", e);
+            setError(true);
+            setIsLoading(false);
+            setLogoSrc(null);
+          };
+          img.src = fullLogoUrl;
+        })
+        .catch(error => {
+          console.error("❌ Logo component - fetch error:", error);
+          setError(true);
+          setIsLoading(false);
+          setLogoSrc(null);
+        });
     } else {
       console.log("🚫 Logo component - no logo path in settings");
       setIsLoading(false);

@@ -5,35 +5,13 @@ import { MoonIcon, SunIcon, Menu, X } from "lucide-react";
 import { useTheme } from '@/components/theme/theme-provider';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
+import { Logo } from '@/components/layout/Logo';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
-  const { companyName, logoUrl, theme } = useTheme();
-  const [logoSrc, setLogoSrc] = useState<string | null>(null);
-  
-  // Debug the theme context values
-  useEffect(() => {
-    console.log("Theme context in navbar:", { companyName, logoUrl, theme });
-    
-    // Try to fetch the image directly with fetch API
-    if (logoUrl) {
-      fetch(logoUrl)
-        .then(response => {
-          console.log(`Logo fetch status: ${response.status}, type: ${response.headers.get('content-type')}`);
-          return response.ok;
-        })
-        .catch(err => console.error("Error fetching logo:", err));
-
-      // Set the logo source
-      setLogoSrc(logoUrl);
-      console.log("Setting logo src in navbar:", logoUrl);
-    } else {
-      setLogoSrc(null);
-      console.log("No logo URL available");
-    }
-  }, [logoUrl, companyName, theme]);
+  const { companyName, theme } = useTheme();
   
   const { user } = useAuth();
 
@@ -78,23 +56,12 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            {/* Logo or Company Name */}
+            {/* Logo using dedicated component */}
             <Link href="/" className="flex items-center">
-              {logoUrl ? (
-                <img 
-                  src={`${logoUrl}?t=${Date.now()}`}
-                  className="h-10 w-auto" 
-                  alt={companyName}
-                  onError={(e) => {
-                    console.error("Error loading logo:", e);
-                    // Don't hide the image, fall back to the text
-                    setLogoSrc(null);
-                  }} 
-                  onLoad={() => console.log("Logo loaded successfully in site navbar:", logoUrl)}
-                />
-              ) : (
-                <span className="text-primary font-bold text-xl">{companyName}</span>
-              )}
+              <Logo 
+                className="h-10 w-auto" 
+                fallbackText={companyName}
+              />
             </Link>
           </div>
 
