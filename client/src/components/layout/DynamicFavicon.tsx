@@ -13,7 +13,19 @@ export default function DynamicFavicon({ defaultFavicon = '/favicon.ico' }: Dyna
     if (!isLoading && settings) {
       // Get the favicon path from settings, using the correct property name
       // The server returns 'favicon' field, not 'faviconPath'
-      const faviconPath = settings.favicon || defaultFavicon;
+      let faviconPath = settings.favicon || defaultFavicon;
+      
+      // Ensure the favicon path is absolute
+      if (faviconPath && !faviconPath.startsWith('http') && !faviconPath.startsWith('/')) {
+        faviconPath = `/${faviconPath}`;
+      }
+      
+      // Add timestamp to bust cache
+      // This forces the browser to load the latest version of the favicon
+      const timestamp = Date.now();
+      const faviconWithTimestamp = faviconPath.includes('?') 
+        ? `${faviconPath}&t=${timestamp}` 
+        : `${faviconPath}?t=${timestamp}`;
       
       // Get existing links
       const existingLink = document.querySelector('link[rel="icon"]');
@@ -21,25 +33,25 @@ export default function DynamicFavicon({ defaultFavicon = '/favicon.ico' }: Dyna
       
       // If favicon path is available, update it
       if (faviconPath) {
-        console.log('Setting favicon to:', faviconPath);
+        console.log('Setting favicon to:', faviconWithTimestamp);
         
         // Update or create favicon link
         if (existingLink) {
-          existingLink.setAttribute('href', faviconPath);
+          existingLink.setAttribute('href', faviconWithTimestamp);
         } else {
           const link = document.createElement('link');
           link.rel = 'icon';
-          link.href = faviconPath;
+          link.href = faviconWithTimestamp;
           document.head.appendChild(link);
         }
         
         // Update or create apple-touch-icon link
         if (existingAppleLink) {
-          existingAppleLink.setAttribute('href', faviconPath);
+          existingAppleLink.setAttribute('href', faviconWithTimestamp);
         } else {
           const appleLink = document.createElement('link');
           appleLink.rel = 'apple-touch-icon';
-          appleLink.href = faviconPath;
+          appleLink.href = faviconWithTimestamp;
           document.head.appendChild(appleLink);
         }
       }

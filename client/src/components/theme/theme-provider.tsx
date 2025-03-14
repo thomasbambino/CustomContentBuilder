@@ -13,6 +13,18 @@ type ThemeProviderState = {
   faviconUrl: string | null;
 };
 
+// Define the shape of the settings data returned from the API
+interface SettingsData {
+  companyName?: string;
+  logoPath?: string;
+  primaryColor?: string;
+  theme?: string;
+  radius?: number;
+  siteTitle?: string;
+  siteDescription?: string;
+  favicon?: string;
+}
+
 const initialState: ThemeProviderState = {
   primaryColor: "#3b82f6", // Default blue
   companyName: "SD Tech Pros",
@@ -26,8 +38,8 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [state, setState] = useState<ThemeProviderState>(initialState);
 
-  // Fetch settings from the API
-  const { data: settings } = useQuery({
+  // Fetch settings from the API with proper type
+  const { data: settings } = useQuery<SettingsData>({
     queryKey: ["/api/settings/public"],
   });
 
@@ -41,7 +53,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       setState({
         primaryColor: settings.primaryColor || state.primaryColor,
         companyName: settings.companyName || state.companyName,
-        theme: settings.theme as "light" | "dark" || state.theme,
+        theme: (settings.theme as "light" | "dark") || state.theme,
         logoUrl: settings.logoPath || null,
         faviconUrl: settings.favicon || null
       });

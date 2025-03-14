@@ -11,15 +11,24 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   const { companyName, logoUrl, theme } = useTheme();
-  console.log("Navbar component - logoUrl:", logoUrl);
-  // Debug the image URL and paths
-  if (logoUrl) {
-    console.log("Logo URL format check:", {
-      logoUrl,
-      absoluteUrl: new URL(logoUrl, window.location.origin).href,
-      withoutLeadingSlash: logoUrl.startsWith('/') ? logoUrl.substring(1) : logoUrl
-    });
-  }
+  const [logoSrc, setLogoSrc] = useState<string | null>(null);
+  
+  // Handle logo URL with cache busting
+  useEffect(() => {
+    if (logoUrl) {
+      // Add timestamp to bust cache
+      const timestamp = Date.now();
+      const processedUrl = logoUrl.includes('?') 
+        ? `${logoUrl}&t=${timestamp}` 
+        : `${logoUrl}?t=${timestamp}`;
+      
+      setLogoSrc(processedUrl);
+      console.log("Logo URL updated with cache busting:", processedUrl);
+    } else {
+      setLogoSrc(null);
+    }
+  }, [logoUrl]);
+  
   const { user } = useAuth();
 
   // Toggle mobile menu
@@ -64,16 +73,16 @@ export default function Navbar() {
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
             {/* Logo */}
-            {logoUrl ? (
+            {logoSrc ? (
               <img 
-                src={logoUrl} 
+                src={logoSrc} 
                 className="h-8 w-8 rounded" 
                 alt={companyName}
                 onError={(e) => {
                   console.error("Error loading logo:", e);
                   (e.target as HTMLImageElement).style.display = 'none';
                 }} 
-                onLoad={() => console.log("Logo loaded successfully in navbar:", logoUrl)}
+                onLoad={() => console.log("Logo loaded successfully in navbar:", logoSrc)}
               />
             ) : (
               <div className="h-8 w-8 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold">
