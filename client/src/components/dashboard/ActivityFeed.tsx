@@ -78,9 +78,9 @@ export default function ActivityFeed({
                 No activity to display
               </li>
             ) : (
-              activities.map((activity, index) => {
+              activities.slice(0, 5).map((activity, index) => {
                 const { iconColor, icon } = getActivityIcon(activity);
-                const isLast = index === activities.length - 1;
+                const isLast = index === Math.min(activities.length, 5) - 1;
                 
                 return (
                   <li key={activity.id}>

@@ -4,6 +4,7 @@ import {
   UserPlusIcon,
   CheckSquareIcon,
 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ActivityItemProps {
@@ -32,10 +33,9 @@ const ActivityItem = ({ icon, title, description, time }: ActivityItemProps) => 
   </div>
 );
 
-export default function RecentActivity() {
-  // This would typically fetch from an API endpoint
-  // For now, we'll use static data
-  const activities = [
+export default function RecentActivity({ activities = [] }: { activities?: any[] }) {
+  // If no activities are passed, use sample data (only for development)
+  const activityData = activities.length > 0 ? activities : [
     {
       id: 1,
       type: "invoice_paid",
@@ -72,6 +72,13 @@ export default function RecentActivity() {
         return <FileTextIcon size={16} />;
     }
   };
+  
+  // Format time (e.g. "2 hours ago")
+  const formatTime = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return formatDistanceToNow(date, { addSuffix: true });
+  };
 
   return (
     <Card className="mb-8">
@@ -80,13 +87,13 @@ export default function RecentActivity() {
       </CardHeader>
       <CardContent className="p-0">
         <div className="divide-y divide-secondary-200">
-          {activities.map((activity) => (
+          {activityData.slice(0, 5).map((activity) => (
             <ActivityItem
               key={activity.id}
-              icon={getIcon(activity.type)}
-              title={activity.title}
-              description={activity.description}
-              time={activity.time}
+              icon={getIcon(activity.type || 'default')}
+              title={activity.title || activity.action || 'Activity'}
+              description={activity.description || activity.details || ''}
+              time={activity.time || formatTime(activity.createdAt)}
             />
           ))}
         </div>
