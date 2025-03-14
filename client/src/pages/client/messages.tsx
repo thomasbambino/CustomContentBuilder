@@ -165,7 +165,7 @@ export default function ClientMessagesPage() {
   ]);
 
   // Get projects for the new message form
-  const { data: projects = [] } = useQuery({
+  const { data: projects = [] } = useQuery<{id: number, name: string}[]>({
     queryKey: ['/api/projects'],
   });
 
@@ -621,7 +621,7 @@ export default function ClientMessagesPage() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="none">None</SelectItem>
-                            {projects.map((project) => (
+                            {projects && projects.map((project: {id: number, name: string}) => (
                               <SelectItem key={project.id} value={project.id.toString()}>
                                 {project.name}
                               </SelectItem>
