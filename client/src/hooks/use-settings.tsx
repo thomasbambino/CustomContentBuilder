@@ -17,6 +17,7 @@ type SettingsContextType = {
   error: Error | null;
   updateSetting: (key: string, value: any) => Promise<void>;
   uploadLogo: (file: File) => Promise<{ url: string }>;
+  uploadFavicon: (file: File) => Promise<{ url: string }>;
   refreshSettings: () => void;
 };
 
@@ -59,6 +60,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       const formData = new FormData();
       formData.append('logo', file);
       
+      console.log("Uploading logo file:", file.name, "Type:", file.type);
+      
       const response = await fetch('/api/settings/logo', {
         method: 'POST',
         body: formData,
@@ -73,13 +76,55 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       return response.json();
     },
     onSuccess: (data) => {
+      console.log("Logo upload successful:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/settings/public'] });
       toast({
         title: 'Logo uploaded',
         description: 'The company logo has been successfully updated.',
       });
     },
     onError: (error: Error) => {
+      console.error("Logo upload failed:", error);
+      toast({
+        title: 'Upload failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+  
+  const faviconUploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('favicon', file);
+      
+      console.log("Uploading favicon file:", file.name, "Type:", file.type);
+      
+      const response = await fetch('/api/settings/favicon', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || response.statusText);
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      console.log("Favicon upload successful:", data);
+      queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/settings/public'] });
+      toast({
+        title: 'Favicon uploaded',
+        description: 'The site favicon has been successfully updated.',
+      });
+    },
+    onError: (error: Error) => {
+      console.error("Favicon upload failed:", error);
       toast({
         title: 'Upload failed',
         description: error.message,
@@ -104,6 +149,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const uploadLogo = async (file: File) => {
     return await logoUploadMutation.mutateAsync(file);
   };
+  
+  const uploadFavicon = async (file: File) => {
+    return await faviconUploadMutation.mutateAsync(file);
+  };
 
   const refreshSettings = () => {
     refetch();
@@ -117,6 +166,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         error,
         updateSetting,
         uploadLogo,
+        uploadFavicon,
         refreshSettings,
       }}
     >

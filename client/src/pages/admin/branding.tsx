@@ -20,12 +20,16 @@ import {
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useSettings } from "@/hooks/use-settings";
 import { Setting } from "@shared/schema";
 
 export default function BrandingPage() {
   const { toast } = useToast();
+  const { uploadLogo, uploadFavicon } = useSettings();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingFavicon, setIsUploadingFavicon] = useState(false);
   
   // Fetch settings
   const { data: settings, isLoading } = useQuery<Setting>({
@@ -116,36 +120,82 @@ export default function BrandingPage() {
   };
   
   // Handle logo upload
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // In a real implementation, you would upload the file to a server
-      // Here we're creating a local object URL as a preview
-      const preview = URL.createObjectURL(file);
-      setLogoPreview(preview);
-      
-      // In a real application, this would be the path returned from the server
-      // For this demo, we're just updating the form data with a placeholder
-      setFormData(prev => ({
-        ...prev,
-        logoPath: `/uploads/logo_${Date.now()}`
-      }));
+      try {
+        // Create a preview immediately for better UX
+        const preview = URL.createObjectURL(file);
+        setLogoPreview(preview);
+        setIsUploadingLogo(true);
+        
+        console.log("Starting logo upload process for file:", file.name);
+        
+        // Use the actual uploadLogo function from useSettings hook
+        const result = await uploadLogo(file);
+        
+        console.log("Logo upload successful, received path:", result.url);
+        
+        // Update the form with the server-returned path
+        setFormData(prev => ({
+          ...prev,
+          logoPath: result.url
+        }));
+        
+        toast({
+          title: "Logo uploaded",
+          description: "Your company logo has been updated successfully.",
+        });
+      } catch (error) {
+        console.error("Logo upload error:", error);
+        toast({
+          title: "Upload failed",
+          description: error instanceof Error ? error.message : "An unknown error occurred",
+          variant: "destructive",
+        });
+      } finally {
+        setIsUploadingLogo(false);
+      }
     }
   };
   
   // Handle favicon upload
-  const handleFaviconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFaviconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // In a real implementation, you would upload the file to a server
-      const preview = URL.createObjectURL(file);
-      setFaviconPreview(preview);
-      
-      // In a real application, this would be the path returned from the server
-      setFormData(prev => ({
-        ...prev,
-        favicon: `/uploads/favicon_${Date.now()}`
-      }));
+      try {
+        // Create a preview immediately for better UX
+        const preview = URL.createObjectURL(file);
+        setFaviconPreview(preview);
+        setIsUploadingFavicon(true);
+        
+        console.log("Starting favicon upload process for file:", file.name);
+        
+        // Use the actual uploadFavicon function from useSettings hook
+        const result = await uploadFavicon(file);
+        
+        console.log("Favicon upload successful, received path:", result.url);
+        
+        // Update the form with the server-returned path
+        setFormData(prev => ({
+          ...prev,
+          favicon: result.url
+        }));
+        
+        toast({
+          title: "Favicon uploaded",
+          description: "Your site favicon has been updated successfully.",
+        });
+      } catch (error) {
+        console.error("Favicon upload error:", error);
+        toast({
+          title: "Upload failed",
+          description: error instanceof Error ? error.message : "An unknown error occurred",
+          variant: "destructive",
+        });
+      } finally {
+        setIsUploadingFavicon(false);
+      }
     }
   };
   
@@ -386,10 +436,19 @@ export default function BrandingPage() {
                         <div className="flex-1">
                           <Label 
                             htmlFor="logo-upload" 
-                            className="cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                            className={`cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${isUploadingLogo ? 'pointer-events-none opacity-50' : ''} bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2`}
                           >
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload Logo
+                            {isUploadingLogo ? (
+                              <>
+                                <div className="animate-spin mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full" />
+                                Uploading...
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload Logo
+                              </>
+                            )}
                           </Label>
                           <Input 
                             id="logo-upload" 
