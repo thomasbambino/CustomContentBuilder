@@ -55,9 +55,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       cb(null, clientUploadDir);
     },
     filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const timestamp = Date.now();
       const ext = path.extname(file.originalname);
-      cb(null, 'logo' + '-' + uniqueSuffix + ext);
+      
+      // Use file.fieldname (like 'logo' or 'favicon') to name the file properly
+      const filename = `${file.fieldname}_${timestamp}${ext}`;
+      cb(null, filename);
     }
   });
   
@@ -663,7 +666,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
       
-      // Get the relative path to use in the frontend
+      console.log("Logo uploaded:", req.file.filename, "Mimetype:", req.file.mimetype);
+      
+      // Get the relative path to use in the frontend with the file extension included
       const relativePath = `/uploads/${req.file.filename}`;
       
       // Copy the uploaded file to server/public/uploads for static serving
@@ -684,6 +689,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Settings not found" });
       }
       
+      console.log("Updating logo path in settings to:", relativePath);
+      
       const updatedSettings = await storage.updateSettings({
         logoPath: relativePath
       });
@@ -701,6 +708,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ 
         url: relativePath,
         message: "Logo uploaded successfully" 
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Favicon upload endpoint
+  app.post("/api/settings/favicon", isAuthenticated, hasRole("admin"), upload.single('favicon'), async (req, res, next) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      console.log("Favicon uploaded:", req.file.filename, "Mimetype:", req.file.mimetype);
+      
+      // Get the relative path to use in the frontend with the file extension included
+      const relativePath = `/uploads/${req.file.filename}`;
+      
+      // Copy the uploaded file to server/public/uploads for static serving
+      try {
+        const sourceFile = path.join(clientUploadDir, req.file.filename);
+        const destFile = path.join(serverUploadDir, req.file.filename);
+        fs.copyFileSync(sourceFile, destFile);
+        console.log(`Favicon file copied to server public directory: ${destFile}`);
+      } catch (copyErr) {
+        console.error('Error copying favicon file to server directory:', copyErr);
+        // Continue even if copy fails, as we still have the file in client/public
+      }
+      
+      // Update settings with the new favicon path
+      const settings = await storage.getSettings();
+      
+      if (!settings) {
+        return res.status(404).json({ message: "Settings not found" });
+      }
+      
+      console.log("Updating favicon path in settings to:", relativePath);
+      
+      const updatedSettings = await storage.updateSettings({
+        favicon: relativePath
+      });
+      
+      if (updatedSettings) {
+        await storage.createActivity({
+          userId: req.user?.id,
+          action: "Favicon Updated",
+          details: "Site favicon was updated",
+          entityType: "settings",
+          entityId: updatedSettings.id
+        });
+      }
+      
+      res.json({ 
+        url: relativePath,
+        message: "Favicon uploaded successfully" 
       });
     } catch (error) {
       next(error);
