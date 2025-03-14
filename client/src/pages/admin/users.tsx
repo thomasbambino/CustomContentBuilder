@@ -60,6 +60,7 @@ interface User {
   email: string;
   name: string; // This is fullName in the database
   role: string;
+  status?: string; // Optional field for account status
   createdAt: string;
   updatedAt: string;
 }
@@ -115,7 +116,14 @@ export default function AdminUsers() {
   // Create user mutation
   const createUserMutation = useMutation({
     mutationFn: async (data: CreateUserValues) => {
-      const response = await apiRequest('POST', '/api/users', data);
+      // Map fullName to name to match the database field
+      const { fullName, ...otherData } = data;
+      const userData = {
+        ...otherData,
+        name: fullName
+      };
+      
+      const response = await apiRequest('POST', '/api/users', userData);
       return response.json();
     },
     onSuccess: () => {
@@ -241,6 +249,28 @@ export default function AdminUsers() {
     }
   });
   
+  // Handle account status (enable/disable)
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ userId, status }: { userId: number; status: string }) => {
+      const response = await apiRequest('PUT', `/api/users/${userId}`, { status });
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      toast({
+        title: "Account status updated",
+        description: `User account has been ${variables.status === 'disabled' ? 'disabled' : 'enabled'}.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Status update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
   const handleResetPassword = (userId: number) => {
     resetPasswordMutation.mutate(userId);
   };
@@ -248,6 +278,14 @@ export default function AdminUsers() {
   const handleToggleRole = (user: User) => {
     const newRole = user.role === 'admin' ? 'client' : 'admin';
     updateRoleMutation.mutate({ userId: user.id, role: newRole });
+  };
+  
+  const handleToggleStatus = (user: User) => {
+    // The status field doesn't exist in the schema yet, but this prepares
+    // for a future feature to disable/enable accounts
+    const currentStatus = user.status || 'active';
+    const newStatus = currentStatus === 'active' ? 'disabled' : 'active';
+    updateStatusMutation.mutate({ userId: user.id, status: newStatus });
   };
 
   return (
@@ -454,6 +492,7 @@ export default function AdminUsers() {
                                   <div className="space-y-4 py-4">
                                     <div className="space-y-2">
                                       <h4 className="font-medium">User Actions</h4>
+                                      <p className="text-sm text-muted-foreground mb-2">Manage user permissions and access</p>
                                       <div className="flex flex-col space-y-2">
                                         <Button 
                                           variant="outline" 
@@ -476,9 +515,18 @@ export default function AdminUsers() {
                                           )}
                                           {user.role === 'admin' ? 'Remove Admin Rights' : 'Make Administrator'}
                                         </Button>
-                                        <Button variant="destructive" className="justify-start">
-                                          <MoreHorizontal className="mr-2 h-4 w-4" />
-                                          Disable Account
+                                        <Button 
+                                          variant="destructive" 
+                                          className="justify-start"
+                                          onClick={() => handleToggleStatus(user)}
+                                          disabled={updateStatusMutation.isPending}
+                                        >
+                                          {updateStatusMutation.isPending ? (
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                          ) : (
+                                            <MoreHorizontal className="mr-2 h-4 w-4" />
+                                          )}
+                                          {(user.status === 'disabled') ? 'Enable Account' : 'Disable Account'}
                                         </Button>
                                       </div>
                                     </div>
