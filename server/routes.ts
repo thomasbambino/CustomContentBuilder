@@ -38,6 +38,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
   
+  // Add a dedicated test endpoint that serves a simple HTML page with the logo
+  app.get('/api/debug/logo-test', (req, res) => {
+    const logoPath = '/uploads/logo-1741979910954.png';
+    const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Logo Test</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .test-item { margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; }
+        img { max-width: 300px; border: 2px solid #eee; }
+        h2 { color: #333; }
+        .success { color: green; }
+        .error { color: red; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Logo Test Page</h1>
+        
+        <div class="test-item">
+          <h2>Direct Image Path Test</h2>
+          <p>Testing: <code>${logoPath}</code></p>
+          <img src="${logoPath}" alt="Logo Test" onerror="this.parentNode.innerHTML += '<p class=\\'error\\'>❌ Image failed to load</p>'">
+        </div>
+        
+        <div class="test-item">
+          <h2>Alternative Path Test</h2>
+          <p>Testing: <code>/uploads/logo-1741979910954.png</code></p>
+          <img src="/uploads/logo-1741979910954.png" alt="Logo Test" onerror="this.parentNode.innerHTML += '<p class=\\'error\\'>❌ Image failed to load</p>'">
+        </div>
+        
+        <div class="test-item">
+          <h2>Path With Query Parameter Test</h2>
+          <p>Testing: <code>${logoPath}?t=${Date.now()}</code></p>
+          <img src="${logoPath}?t=${Date.now()}" alt="Logo Test" onerror="this.parentNode.innerHTML += '<p class=\\'error\\'>❌ Image failed to load</p>'">
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+    res.setHeader('Content-Type', 'text/html');
+    res.send(html);
+  });
+
   // Enhanced debug endpoint to check file accessibility - no auth required for debugging
   app.get('/api/debug/file-check', async (req, res) => {
     try {
