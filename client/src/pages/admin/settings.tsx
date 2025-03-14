@@ -182,11 +182,15 @@ export default function AdminSettings() {
   };
 
   return (
-    <div className="flex h-screen bg-secondary-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <AdminHeader title="Settings" />
+    <AppLayout>
+      <div className="py-6 px-4 sm:px-6 lg:px-8">
+        <div className="md:flex md:items-center md:justify-between mb-6">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+              Settings
+            </h1>
+          </div>
+        </div>
         
         <main className="flex-1 overflow-y-auto bg-secondary-50 p-6">
           <Tabs defaultValue="branding">
@@ -938,6 +942,6 @@ export default function AdminSettings() {
           </Tabs>
         </main>
       </div>
-    </div>
+    </AppLayout>
   );
 }
