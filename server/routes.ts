@@ -38,7 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
   
-  // Debug endpoint to check file accessibility - no auth required for debugging
+  // Enhanced debug endpoint to check file accessibility - no auth required for debugging
   app.get('/api/debug/file-check', async (req, res) => {
     try {
       const filePath = req.query.path as string;
@@ -60,16 +60,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check file sizes if they exist
       let clientFileSize = 0;
       let serverFileSize = 0;
+      let clientMimeType = null;
+      let serverMimeType = null;
+      let clientFileContent = null;
       
       if (clientFileExists) {
         const clientStats = fs.statSync(clientPublicPath);
         clientFileSize = clientStats.size;
+        
+        // Try to determine MIME type
+        if (clientPublicPath.endsWith('.png')) {
+          clientMimeType = 'image/png';
+        } else if (clientPublicPath.endsWith('.jpg') || clientPublicPath.endsWith('.jpeg')) {
+          clientMimeType = 'image/jpeg';
+        } else if (clientPublicPath.endsWith('.svg')) {
+          clientMimeType = 'image/svg+xml';
+          // For SVGs, we can read the content
+          clientFileContent = fs.readFileSync(clientPublicPath, 'utf8');
+        }
       }
       
       if (serverFileExists) {
         const serverStats = fs.statSync(serverPublicPath);
         serverFileSize = serverStats.size;
+        
+        // Try to determine MIME type
+        if (serverPublicPath.endsWith('.png')) {
+          serverMimeType = 'image/png';
+        } else if (serverPublicPath.endsWith('.jpg') || serverPublicPath.endsWith('.jpeg')) {
+          serverMimeType = 'image/jpeg';
+        } else if (serverPublicPath.endsWith('.svg')) {
+          serverMimeType = 'image/svg+xml';
+        }
       }
+      
+      // Test direct access URL
+      const directUrl = `${req.protocol}://${req.get('host')}${filePath}`;
+      const alternativeUrl = `${req.protocol}://${req.get('host')}/uploads/${path.basename(filePath)}`;
       
       res.json({
         requestedPath: filePath,
@@ -79,7 +106,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         clientFileExists,
         serverFileExists,
         clientFileSize,
-        serverFileSize
+        serverFileSize,
+        clientMimeType,
+        serverMimeType,
+        directUrl,
+        alternativeUrl,
+        clientFileContent,
+        currentUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`
       });
     } catch (error) {
       res.status(500).json({ message: "Error checking file", error: String(error) });
