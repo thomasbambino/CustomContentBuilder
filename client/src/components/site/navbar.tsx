@@ -13,17 +13,27 @@ export default function Navbar() {
   const { companyName, logoUrl, theme } = useTheme();
   const [logoSrc, setLogoSrc] = useState<string | null>(null);
   
-  // Handle logo URL with cache busting
+  // Debug the theme context values
   useEffect(() => {
+    console.log("Theme context in navbar:", { companyName, logoUrl, theme });
+    
+    // Try to fetch the image directly with fetch API
     if (logoUrl) {
-      // Cache busting is now handled in the theme provider
+      fetch(logoUrl)
+        .then(response => {
+          console.log(`Logo fetch status: ${response.status}, type: ${response.headers.get('content-type')}`);
+          return response.ok;
+        })
+        .catch(err => console.error("Error fetching logo:", err));
+
+      // Set the logo source
       setLogoSrc(logoUrl);
       console.log("Setting logo src in navbar:", logoUrl);
     } else {
       setLogoSrc(null);
       console.log("No logo URL available");
     }
-  }, [logoUrl]);
+  }, [logoUrl, companyName, theme]);
   
   const { user } = useAuth();
 
@@ -68,27 +78,23 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            {/* Logo */}
-            {logoSrc ? (
-              <img 
-                src={logoSrc} 
-                className="h-8 w-auto rounded" 
-                alt={companyName}
-                onError={(e) => {
-                  console.error("Error loading logo:", e);
-                  // Don't hide the image, fall back to the letter logo
-                  setLogoSrc(null);
-                }} 
-                onLoad={() => console.log("Logo loaded successfully in navbar:", logoSrc)}
-              />
-            ) : (
-              <div className="h-8 w-8 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold">
-                {companyName.substring(0, 1)}
-              </div>
-            )}
-            {/* Company Name */}
-            <Link href="/" className="text-primary font-bold text-xl">
-              {companyName}
+            {/* Logo or Company Name */}
+            <Link href="/" className="flex items-center space-x-2">
+              {logoSrc ? (
+                <img 
+                  src={logoSrc} 
+                  className="h-10 w-auto" 
+                  alt={companyName}
+                  onError={(e) => {
+                    console.error("Error loading logo:", e);
+                    // Don't hide the image, fall back to the text
+                    setLogoSrc(null);
+                  }} 
+                  onLoad={() => console.log("Logo loaded successfully in navbar:", logoSrc)}
+                />
+              ) : (
+                <span className="text-primary font-bold text-xl">{companyName}</span>
+              )}
             </Link>
           </div>
 
