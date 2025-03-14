@@ -56,12 +56,25 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            {/* Logo with dedicated component */}
+            {/* Direct logo image implementation */}
             <Link href="/" className="flex items-center">
-              <Logo 
-                className="h-10 w-auto" 
-                fallbackText={settings.companyName}
-              />
+              {settings.logoPath ? (
+                <img 
+                  src="/uploads/logo-1741979910954.png" 
+                  alt={settings.companyName}
+                  className="h-10 w-auto"
+                  onError={(e) => {
+                    console.error("Direct logo failed to load in navbar");
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+              ) : null}
+              <span 
+                className={`font-bold text-xl text-primary ${settings.logoPath ? 'hidden' : ''}`}
+              >
+                {settings.companyName}
+              </span>
             </Link>
           </div>
 
