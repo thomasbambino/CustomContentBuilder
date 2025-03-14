@@ -18,15 +18,46 @@ interface PublicSettings {
   favicon?: string;
 }
 
+// Define a consistent type for our defaulted settings value
+interface NavbarSettings {
+  logoPath: string | null;
+  companyName: string;
+}
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   
-  // Get company settings
-  const { data: settings = { logoPath: null, companyName: 'SD Tech Pros' } } = useQuery<PublicSettings>({
+  // Get company settings with properly typed default
+  const { data: fetchedSettings } = useQuery<PublicSettings>({
     queryKey: ['/api/settings/public'],
   });
+  
+  // Create a properly typed settings object
+  const settings: NavbarSettings = {
+    logoPath: fetchedSettings?.logoPath || null,
+    companyName: fetchedSettings?.companyName || 'SD Tech Pros',
+  };
+  
+  // Use an effect to handle the data separately from the query
+  useEffect(() => {
+    console.log("Public navbar received settings:", settings);
+    
+    if (settings.logoPath) {
+      console.log("Public navbar logo path:", settings.logoPath);
+      setLogoUrl(settings.logoPath);
+      
+      // Try to preload the image to check if it's accessible
+      const img = new Image();
+      img.onload = () => console.log("Public navbar preload logo success:", settings.logoPath);
+      img.onerror = (e) => console.error("Public navbar preload logo failed:", e);
+      img.src = settings.logoPath;
+    } else {
+      setLogoUrl(null);
+    }
+  }, [settings.logoPath]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -45,20 +76,20 @@ export default function Navbar() {
           <div className="flex items-center space-x-2">
             {/* Logo with cache busting */}
             <Link href="/" className="flex items-center">
-              {settings?.logoPath ? (
+              {logoUrl ? (
                 <img 
-                  src={`${settings.logoPath}?t=${Date.now()}`} 
+                  src={`${logoUrl}?t=${Date.now()}`} 
                   className="h-10 w-auto" 
-                  alt={settings?.companyName || 'Company Logo'}
+                  alt={settings.companyName}
                   onError={(e) => {
                     console.error("Error loading logo in public navbar:", e);
                     // Set a fallback to text logo
-                    (e.target as HTMLImageElement).style.display = 'none';
+                    setLogoUrl(null);
                   }}
-                  onLoad={() => console.log("Logo loaded successfully in public navbar:", settings.logoPath)}
+                  onLoad={() => console.log("Logo loaded successfully in public navbar:", logoUrl)}
                 />
               ) : (
-                <span className="text-primary-700 font-bold text-xl">{settings?.companyName || 'SD Tech Pros'}</span>
+                <span className="text-primary-700 font-bold text-xl">{settings.companyName}</span>
               )}
             </Link>
           </div>

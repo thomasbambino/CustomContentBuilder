@@ -50,25 +50,38 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       console.log("Logo path from API:", settings.logoPath);
       console.log("Favicon path from API:", settings.favicon);
       
-      // Apply cache busting for logo URL
-      let processedLogoUrl = null;
-      if (settings.logoPath) {
-        const timestamp = Date.now();
-        processedLogoUrl = settings.logoPath.includes('?') 
-          ? `${settings.logoPath}&t=${timestamp}` 
-          : `${settings.logoPath}?t=${timestamp}`;
-        console.log("Processed logo URL with cache busting:", processedLogoUrl);
+      // Set the logo URL directly without modification
+      let logoUrl = settings.logoPath || null;
+      console.log("Setting logo URL directly:", logoUrl);
+      
+      // Test if logo is accessible with fetch API
+      if (logoUrl) {
+        fetch(logoUrl)
+          .then(response => {
+            console.log(`Theme provider logo fetch status: ${response.status}, type: ${response.headers.get('content-type')}`);
+            if (!response.ok) {
+              console.error(`Failed to fetch logo: ${response.status} ${response.statusText}`);
+            }
+            return response.ok;
+          })
+          .catch(err => console.error("Error fetching logo in theme provider:", err));
+          
+        // Also try with Image preload
+        const img = new Image();
+        img.onload = () => console.log("Theme provider preload logo success:", logoUrl);
+        img.onerror = (e) => console.error("Theme provider preload logo failed:", e);
+        img.src = logoUrl;
       }
       
       setState({
         primaryColor: settings.primaryColor || state.primaryColor,
         companyName: settings.companyName || state.companyName,
         theme: (settings.theme as "light" | "dark") || state.theme,
-        logoUrl: processedLogoUrl,
+        logoUrl: logoUrl,
         faviconUrl: settings.favicon || null
       });
       
-      console.log("Updated state with logoUrl:", processedLogoUrl, "and faviconUrl:", settings.favicon);
+      console.log("Updated theme state with logoUrl:", logoUrl, "and faviconUrl:", settings.favicon);
     }
   }, [settings]);
 
