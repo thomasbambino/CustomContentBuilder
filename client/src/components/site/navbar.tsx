@@ -11,6 +11,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   const { companyName, logoUrl, theme } = useTheme();
+  console.log("Navbar component - logoUrl:", logoUrl);
+  console.log("Navbar component - theme context:", useTheme());
   const { user } = useAuth();
 
   // Toggle mobile menu

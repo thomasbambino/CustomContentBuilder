@@ -29,12 +29,17 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     queryKey: ["/api/settings/public"],
     onSuccess: (data) => {
       if (data) {
+        console.log("Theme provider received settings:", data);
+        console.log("Logo path from API:", data.logoPath);
+        
         setState({
           primaryColor: data.primaryColor || state.primaryColor,
           companyName: data.companyName || state.companyName,
           theme: data.theme as "light" | "dark" || state.theme,
           logoUrl: data.logoPath || null
         });
+        
+        console.log("Updated state with logoUrl:", data.logoPath);
       }
     }
   });
