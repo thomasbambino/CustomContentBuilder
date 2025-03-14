@@ -31,7 +31,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     error, 
     isLoading,
     refetch
-  } = useQuery<Setting[]>({
+  } = useQuery({
     queryKey: ['/api/settings'],
   });
 
@@ -133,13 +133,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     },
   });
 
-  // Transform settings array into an object for easier access
+  // Create an empty settings object
   const settingsObject: Record<string, any> = {};
   
   if (settingsData) {
-    settingsData.forEach(setting => {
-      settingsObject[setting.key] = setting.value;
-    });
+    console.log("Settings data received:", JSON.stringify(settingsData, null, 2));
+    
+    // Safely extract properties from settingsData
+    if (typeof settingsData === 'object' && settingsData !== null) {
+      // Copy all properties from settingsData to settingsObject
+      Object.entries(settingsData).forEach(([key, value]) => {
+        settingsObject[key] = value;
+      });
+    }
   }
 
   const updateSetting = async (key: string, value: any) => {
