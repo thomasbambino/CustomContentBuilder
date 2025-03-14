@@ -1074,6 +1074,158 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User management routes
+  app.get("/api/users", isAuthenticated, hasRole("admin"), async (req, res, next) => {
+    try {
+      const users = await storage.getAllUsers();
+      
+      // Remove password field from users
+      const usersWithoutPassword = users.map(user => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+      
+      res.json(usersWithoutPassword);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.post("/api/users", isAuthenticated, hasRole("admin"), validateRequest(insertUserSchema), async (req, res, next) => {
+    try {
+      const { password, ...userData } = req.body;
+      
+      // Hash the password
+      const hashedPassword = await hashPassword(password);
+      
+      // Create the user
+      const user = await storage.createUser({
+        ...userData,
+        password: hashedPassword
+      });
+      
+      // Create activity record
+      await storage.createActivity({
+        userId: req.user?.id,
+        action: "User Created",
+        details: `New user created: ${user.username}`,
+        entityType: "user",
+        entityId: user.id
+      });
+      
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = user;
+      
+      res.status(201).json(userWithoutPassword);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.get("/api/users/:id", isAuthenticated, hasRole("admin"), async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = user;
+      
+      res.json(userWithoutPassword);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.put("/api/users/:id", isAuthenticated, hasRole("admin"), async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { role, ...otherUpdates } = req.body;
+      
+      // Check if user exists
+      const existingUser = await storage.getUser(userId);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Update user
+      const updatedUser = await storage.updateUser(userId, {
+        ...otherUpdates,
+        role,
+        updatedAt: new Date()
+      });
+      
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Failed to update user" });
+      }
+      
+      // Create activity record
+      await storage.createActivity({
+        userId: req.user?.id,
+        action: "User Updated",
+        details: `User ${updatedUser.username} was updated`,
+        entityType: "user",
+        entityId: updatedUser.id
+      });
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      res.json(userWithoutPassword);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.post("/api/users/:id/reset-password", isAuthenticated, hasRole("admin"), async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // Check if user exists
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Generate a temporary password
+      const tempPassword = Math.random().toString(36).slice(2) + Math.random().toString(36).toUpperCase().slice(2);
+      
+      // Hash the password
+      const hashedPassword = await hashPassword(tempPassword);
+      
+      // Update user's password
+      const updatedUser = await storage.updateUser(userId, {
+        password: hashedPassword,
+        updatedAt: new Date()
+      });
+      
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Failed to reset password" });
+      }
+      
+      // Create activity record
+      await storage.createActivity({
+        userId: req.user?.id,
+        action: "Password Reset",
+        details: `Password reset for user ${user.username}`,
+        entityType: "user",
+        entityId: user.id
+      });
+      
+      // In a real app, this would send an email with the temp password
+      // For now, return it in the response
+      res.json({ 
+        message: "Password has been reset",
+        tempPassword: tempPassword
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
