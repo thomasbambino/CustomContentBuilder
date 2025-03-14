@@ -65,16 +65,20 @@ export default function Navbar() {
               </div>
             )}
             {/* Company Name */}
-            <Link href="/">
-              <a className="text-primary font-bold text-xl">{companyName}</a>
+            <Link href="/" className="text-primary font-bold text-xl">
+              {companyName}
             </Link>
           </div>
 
           {/* Navigation Links - Desktop */}
           <div className="hidden md:flex space-x-10">
             {navLinks.map(link => (
-              <Link key={link.name} href={link.href}>
-                <a className="text-secondary-600 hover:text-primary font-medium">{link.name}</a>
+              <Link 
+                key={link.name} 
+                href={link.href}
+                className="text-secondary-600 hover:text-primary font-medium"
+              >
+                {link.name}
               </Link>
             ))}
           </div>
@@ -121,13 +125,13 @@ export default function Navbar() {
       )}>
         <div className="px-4 sm:px-6 space-y-1">
           {navLinks.map(link => (
-            <Link key={link.name} href={link.href}>
-              <a 
-                className="block py-2 text-secondary-700 hover:text-primary font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.name}
-              </a>
+            <Link 
+              key={link.name} 
+              href={link.href}
+              className="block py-2 text-secondary-700 hover:text-primary font-medium"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {link.name}
             </Link>
           ))}
         </div>
