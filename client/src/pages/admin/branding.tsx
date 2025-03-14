@@ -479,10 +479,19 @@ export default function BrandingPage() {
                         <div className="flex-1">
                           <Label 
                             htmlFor="favicon-upload" 
-                            className="cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                            className={`cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${isUploadingFavicon ? 'pointer-events-none opacity-50' : ''} bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2`}
                           >
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload Favicon
+                            {isUploadingFavicon ? (
+                              <>
+                                <div className="animate-spin mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full" />
+                                Uploading...
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload Favicon
+                              </>
+                            )}
                           </Label>
                           <Input 
                             id="favicon-upload" 
