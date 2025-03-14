@@ -61,14 +61,14 @@ export default function AdminSidebar() {
   console.log("Admin sidebar logo path:", companyLogo);
 
   const sidebarItems = [
-    { href: "/admin/dashboard", icon: <LayoutDashboard size={20} />, text: "Dashboard" },
+    { href: "/admin", icon: <LayoutDashboard size={20} />, text: "Dashboard" },
     { href: "/admin/clients", icon: <Users size={20} />, text: "Clients" },
     { href: "/admin/projects", icon: <GitBranch size={20} />, text: "Projects" },
     { href: "/admin/invoices", icon: <FileText size={20} />, text: "Invoices" },
     { href: "/admin/inquiries", icon: <Inbox size={20} />, text: "Inquiries", badge: 3 },
     { href: "/admin/users", icon: <UserCog size={20} />, text: "Users" },
-    { href: "/admin/content", icon: <FileEdit size={20} />, text: "Content" },
-    { href: "/admin/settings", icon: <Settings size={20} />, text: "Settings" },
+    { href: "/admin/content-editor", icon: <FileEdit size={20} />, text: "Content" },
+    { href: "/admin/branding", icon: <Settings size={20} />, text: "Settings" },
     { href: "/admin/profile", icon: <User size={20} />, text: "My Profile" },
   ];
 
