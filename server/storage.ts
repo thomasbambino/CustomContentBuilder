@@ -702,59 +702,100 @@ export class DatabaseStorage implements IStorage {
   
   // Settings operations
   async getSettings(): Promise<Setting | undefined> {
-    // Get all settings from the key-value table
-    const results = await this.client`
-      SELECT id, key, value, "updatedBy", "updatedAt"
+    const result = await this.client`
+      SELECT 
+        id, 
+        company_name AS "companyName", 
+        logo_path AS "logoPath", 
+        primary_color AS "primaryColor", 
+        theme, 
+        radius, 
+        site_title AS "siteTitle", 
+        site_description AS "siteDescription", 
+        favicon,
+        updated_at AS "updatedAt"
       FROM settings
+      LIMIT 1
     `;
     
-    if (results.length === 0) return undefined;
+    if (result.length === 0) return undefined;
     
-    // Transform key-value pairs into a single settings object
-    const settingsObj: any = {
-      id: 1,
-      updatedAt: null
-    };
-    
-    for (const row of results) {
-      settingsObj[row.key] = row.value;
-      // Use the most recent updatedAt for the whole object
-      if (!settingsObj.updatedAt || (row.updatedAt && row.updatedAt > settingsObj.updatedAt)) {
-        settingsObj.updatedAt = row.updatedAt;
-      }
-    }
-    
-    return settingsObj as Setting;
+    return result[0] as Setting;
   }
   
   async updateSettings(settingsUpdate: Partial<Setting>): Promise<Setting | undefined> {
-    // We need to convert the object to key-value pairs and update them individually
     const now = new Date();
-    const userId = 1; // Default admin user
     
-    // Remove internal properties that should not be stored as keys
+    // Remove internal properties that should not be stored
     const { id, updatedAt, ...updateData } = settingsUpdate;
     
-    // For each key-value pair in the update, update or insert into the settings table
+    // Prepare SQL update based on the object properties
+    let updateColumns = '';
+    const updateValues: any[] = [];
+    
+    // For camelCase to snake_case conversion
+    const toSnakeCase = (str: string) => str.replace(/([A-Z])/g, '_$1').toLowerCase();
+    
+    // Build column updates
     for (const [key, value] of Object.entries(updateData)) {
-      // Check if this key already exists
-      const existing = await this.client`
-        SELECT id FROM settings WHERE key = ${key}
-      `;
+      if (updateColumns) updateColumns += ', ';
       
-      if (existing.length > 0) {
-        // Update existing setting
-        await this.client`
-          UPDATE settings 
-          SET value = ${value}, "updatedBy" = ${userId}, "updatedAt" = ${now}
-          WHERE key = ${key}
-        `;
-      } else {
-        // Insert new setting
-        await this.client`
-          INSERT INTO settings (key, value, "updatedBy", "updatedAt")
-          VALUES (${key}, ${value}, ${userId}, ${now})
-        `;
+      // Convert camelCase keys to snake_case for the database
+      const dbKey = toSnakeCase(key);
+      updateColumns += `${dbKey} = $${updateValues.length + 1}`;
+      updateValues.push(value);
+    }
+    
+    // Add updated_at timestamp
+    if (updateColumns) {
+      updateColumns += `, updated_at = $${updateValues.length + 1}`;
+      updateValues.push(now);
+    }
+    
+    // Check if settings exist
+    const settings = await this.getSettings();
+    
+    if (settings) {
+      // Update existing settings
+      if (updateColumns) {
+        await this.client.query(
+          `UPDATE settings SET ${updateColumns}`,
+          ...updateValues
+        );
+      }
+    } else {
+      // Insert new settings with reasonable defaults
+      await this.client.query(
+        `INSERT INTO settings (
+          company_name, 
+          logo_path, 
+          primary_color, 
+          theme, 
+          radius, 
+          site_title, 
+          site_description, 
+          favicon, 
+          updated_at
+        ) VALUES (
+          'SD Tech Pros', 
+          null, 
+          'hsl(222.2 47.4% 11.2%)', 
+          'light', 
+          0.5, 
+          'SD Tech Pros Client Portal', 
+          null, 
+          null, 
+          $1
+        )`,
+        now
+      );
+      
+      // Update with new values if any
+      if (updateColumns) {
+        await this.client.query(
+          `UPDATE settings SET ${updateColumns}`,
+          ...updateValues
+        );
       }
     }
     
@@ -775,12 +816,12 @@ export class DatabaseStorage implements IStorage {
         title,
         subtitle,
         content,
-        "imagePath",
+        image_path AS "imagePath",
         "order",
-        "isActive",
-        "updatedAt"
+        is_active AS "isActive",
+        updated_at AS "updatedAt"
       FROM contents 
-      WHERE type = ${type} AND "isActive" = true
+      WHERE type = ${type} AND is_active = true
     `;
   }
   

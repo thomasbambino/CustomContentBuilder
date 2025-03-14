@@ -198,7 +198,9 @@ export default function ClientMessagesPage() {
             createdAt: new Date().toISOString(),
             project: message.projectId ? {
               id: parseInt(message.projectId),
-              name: projects.find(p => p.id.toString() === message.projectId)?.name || "Unknown Project"
+              name: (projects && Array.isArray(projects)) 
+                ? projects.find((p: any) => p.id.toString() === message.projectId)?.name || "Unknown Project"
+                : "Unknown Project"
             } : null
           };
           resolve(newMessage);
