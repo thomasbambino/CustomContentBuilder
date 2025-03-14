@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import AdminLayout from "@/components/layouts/admin-layout";
+import AppLayout from "@/components/layout/AppLayout";
 import { Activity } from "@/components/dashboard/ActivityFeed";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
@@ -62,7 +62,11 @@ export default function ActivitiesPage() {
   };
 
   return (
-    <AdminLayout title="Activity Log">
+    <AppLayout>
+      <div className="mb-6">
+        <h1 className="text-3xl font-semibold text-gray-900">Activity Log</h1>
+        <p className="mt-2 text-gray-600">View system-wide activity and user actions</p>
+      </div>
       <Card className="w-full">
         <CardHeader>
           <CardTitle>System Activity Log</CardTitle>
@@ -96,9 +100,9 @@ export default function ActivitiesPage() {
                             <div className="min-w-0 flex-1">
                               <div>
                                 <div className="text-sm">
-                                  <a href="#" className="font-medium text-gray-900">
+                                  <span className="font-medium text-gray-900">
                                     {activity.userName || "System"}
-                                  </a>
+                                  </span>
                                   <span className="ml-2 font-medium text-gray-500">
                                     {activity.action}
                                   </span>
@@ -126,6 +130,6 @@ export default function ActivitiesPage() {
           </div>
         </CardContent>
       </Card>
-    </AdminLayout>
+    </AppLayout>
   );
 }
