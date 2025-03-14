@@ -13,6 +13,7 @@ import {
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { drizzle } from 'drizzle-orm/postgres-js';
+import { eq } from 'drizzle-orm';
 import postgres from 'postgres';
 import connectPg from "connect-pg-simple";
 
@@ -888,7 +889,7 @@ export class DatabaseStorage implements IStorage {
     const [apiConnection] = await this.db
       .select()
       .from(apiConnections)
-      .where(({ provider: apiProvider }) => apiProvider.equals(provider));
+      .where(eq(apiConnections.provider, provider));
     return apiConnection;
   }
   
@@ -899,7 +900,7 @@ export class DatabaseStorage implements IStorage {
       const [updatedConnection] = await this.db
         .update(apiConnections)
         .set({ ...connectionUpdate, updatedAt: new Date() })
-        .where(({ id }) => id.equals(existingConnection.id))
+        .where(eq(apiConnections.id, existingConnection.id))
         .returning();
       return updatedConnection;
     } else if (connectionUpdate.provider) {
