@@ -17,7 +17,8 @@ const initialState: ThemeProviderState = {
   primaryColor: "#3b82f6", // Default blue
   companyName: "SD Tech Pros",
   theme: "light",
-  logoUrl: null
+  logoUrl: null,
+  faviconUrl: null
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -28,22 +29,26 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // Fetch settings from the API
   const { data: settings } = useQuery({
     queryKey: ["/api/settings/public"],
-    onSuccess: (data) => {
-      if (data) {
-        console.log("Theme provider received settings:", data);
-        console.log("Logo path from API:", data.logoPath);
-        
-        setState({
-          primaryColor: data.primaryColor || state.primaryColor,
-          companyName: data.companyName || state.companyName,
-          theme: data.theme as "light" | "dark" || state.theme,
-          logoUrl: data.logoPath || null
-        });
-        
-        console.log("Updated state with logoUrl:", data.logoPath);
-      }
-    }
   });
+
+  // Process settings data when it changes
+  useEffect(() => {
+    if (settings) {
+      console.log("Theme provider received settings:", settings);
+      console.log("Logo path from API:", settings.logoPath);
+      console.log("Favicon path from API:", settings.favicon);
+      
+      setState({
+        primaryColor: settings.primaryColor || state.primaryColor,
+        companyName: settings.companyName || state.companyName,
+        theme: settings.theme as "light" | "dark" || state.theme,
+        logoUrl: settings.logoPath || null,
+        faviconUrl: settings.favicon || null
+      });
+      
+      console.log("Updated state with logoUrl:", settings.logoPath, "and faviconUrl:", settings.favicon);
+    }
+  }, [settings]);
 
   // Apply theme changes when state updates
   useEffect(() => {
