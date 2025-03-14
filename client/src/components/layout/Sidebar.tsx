@@ -166,11 +166,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                   </a>
                 </Link>
                 
-                <Link href="/admin/user-management">
+                <Link href="/admin/users">
                   <a 
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
-                      isActive("/admin/user-management")
+                      isActive("/admin/users")
                         ? "bg-primary-50 text-primary-700"
                         : "text-gray-700 hover:bg-gray-100"
                     )}

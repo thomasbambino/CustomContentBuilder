@@ -29,7 +29,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   
   // Navigation items for admin
   const adminNavItems = [
-    { name: 'Overview', href: '/admin/dashboard', icon: <LayoutDashboard className="text-lg mr-3" /> },
+    { name: 'Overview', href: '/admin', icon: <LayoutDashboard className="text-lg mr-3" /> },
     { name: 'Clients', href: '/admin/clients', icon: <Users className="text-lg mr-3" /> },
     { name: 'Projects', href: '/admin/projects', icon: <Briefcase className="text-lg mr-3" /> },
     { name: 'Invoices', href: '/admin/invoices', icon: <FileText className="text-lg mr-3" /> },
@@ -38,7 +38,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   
   // Content management items for admin
   const adminContentItems = [
-    { name: 'Website Editor', href: '/admin/website', icon: <LayoutTemplate className="text-lg mr-3" /> },
+    { name: 'Website Editor', href: '/admin/content-editor', icon: <LayoutTemplate className="text-lg mr-3" /> },
     { name: 'Branding', href: '/admin/branding', icon: <Palette className="text-lg mr-3" /> },
     { name: 'User Management', href: '/admin/users', icon: <UserCog className="text-lg mr-3" /> },
     { name: 'API Connections', href: '/admin/api-connections', icon: <Link2 className="text-lg mr-3" /> }
@@ -46,7 +46,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   
   // Navigation items for client
   const clientNavItems = [
-    { name: 'Dashboard', href: '/client/dashboard', icon: <LayoutDashboard className="text-lg mr-3" /> },
+    { name: 'Dashboard', href: '/client', icon: <LayoutDashboard className="text-lg mr-3" /> },
     { name: 'My Projects', href: '/client/projects', icon: <Briefcase className="text-lg mr-3" /> },
     { name: 'Invoices', href: '/client/invoices', icon: <FileText className="text-lg mr-3" /> },
     { name: 'Messages', href: '/client/messages', icon: <Inbox className="text-lg mr-3" /> },
