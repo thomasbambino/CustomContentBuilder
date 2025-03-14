@@ -53,8 +53,11 @@ export default function AdminSidebar() {
   const { settings, isLoading } = useSettings();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const companyName = settings?.["company.name"] || "SD Tech Pros";
-  const companyLogo = settings?.["company.logo"];
+  // Get company name and logo from settings
+  console.log("Admin sidebar settings:", settings);
+  const companyName = settings?.companyName || "SD Tech Pros";
+  const companyLogo = settings?.logoPath;
+  console.log("Admin sidebar logo path:", companyLogo);
 
   const sidebarItems = [
     { href: "/admin/dashboard", icon: <LayoutDashboard size={20} />, text: "Dashboard" },
