@@ -65,7 +65,16 @@ export default function Navbar() {
           <div className="flex items-center space-x-2">
             {/* Logo */}
             {logoUrl ? (
-              <img src={logoUrl} className="h-8 w-8 rounded" alt={companyName} />
+              <img 
+                src={logoUrl} 
+                className="h-8 w-8 rounded" 
+                alt={companyName}
+                onError={(e) => {
+                  console.error("Error loading logo:", e);
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }} 
+                onLoad={() => console.log("Logo loaded successfully in navbar:", logoUrl)}
+              />
             ) : (
               <div className="h-8 w-8 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold">
                 {companyName.substring(0, 1)}

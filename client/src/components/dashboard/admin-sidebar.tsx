@@ -6,7 +6,7 @@ import {
   LayoutDashboard,
   Users,
   GitBranch,
-  FileInvoice,
+  FileText, // Changed from FileInvoice to FileText
   Inbox,
   UserCog,
   FileEdit,
@@ -63,7 +63,7 @@ export default function AdminSidebar() {
     { href: "/admin/dashboard", icon: <LayoutDashboard size={20} />, text: "Dashboard" },
     { href: "/admin/clients", icon: <Users size={20} />, text: "Clients" },
     { href: "/admin/projects", icon: <GitBranch size={20} />, text: "Projects" },
-    { href: "/admin/invoices", icon: <FileInvoice size={20} />, text: "Invoices" },
+    { href: "/admin/invoices", icon: <FileText size={20} />, text: "Invoices" },
     { href: "/admin/inquiries", icon: <Inbox size={20} />, text: "Inquiries", badge: 3 },
     { href: "/admin/users", icon: <UserCog size={20} />, text: "Users" },
     { href: "/admin/content", icon: <FileEdit size={20} />, text: "Content" },
@@ -77,7 +77,16 @@ export default function AdminSidebar() {
           {isLoading ? (
             <div className="h-8 w-8 rounded bg-gray-200 animate-pulse"></div>
           ) : companyLogo ? (
-            <img src={companyLogo} className="h-8 w-8 rounded" alt="Company Logo" />
+            <img 
+              src={companyLogo} 
+              className="h-8 w-8 rounded" 
+              alt="Company Logo"
+              onError={(e) => {
+                console.error("Error loading logo in sidebar:", e);
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+              onLoad={() => console.log("Logo loaded successfully in admin sidebar:", companyLogo)}
+            />
           ) : (
             <div className="h-8 w-8 rounded bg-primary-600 flex items-center justify-center text-white">
               <span className="font-semibold">{companyName.charAt(0)}</span>
