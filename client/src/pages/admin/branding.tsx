@@ -484,7 +484,20 @@ export default function BrandingPage() {
                       <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center overflow-hidden border">
                           {faviconPreview ? (
-                            <img src={faviconPreview} alt="Favicon preview" className="w-full h-full object-contain" />
+                            <>
+                              <img 
+                                src={faviconPreview} 
+                                alt="Favicon preview" 
+                                className="w-full h-full object-contain"
+                                onError={(e) => {
+                                  console.error("Favicon image loading error:", e);
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJub25lIj48cGF0aCBmaWxsPSIjY2NjIiBkPSJNNDUgNDVoMTB2MTBINDVWNDVaIi8+PC9zdmc+';
+                                }}
+                                onLoad={() => console.log("Favicon image loaded successfully from:", faviconPreview)}
+                              />
+                              <div className="mt-1 text-xs text-gray-400 truncate max-w-[64px]">{faviconPreview}</div>
+                            </>
                           ) : (
                             <span className="text-gray-400">No icon</span>
                           )}
