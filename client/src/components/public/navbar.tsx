@@ -5,6 +5,7 @@ import { Moon, Sun, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
+import { Logo } from "@/components/layout/Logo";
 
 // Define the settings interface
 interface PublicSettings {
@@ -28,50 +29,17 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   
   // Get company settings with properly typed default
   const { data: fetchedSettings } = useQuery<PublicSettings>({
     queryKey: ['/api/settings/public'],
   });
   
-  // Create a properly typed settings object
+  // Create a properly typed settings object for fallback text
   const settings: NavbarSettings = {
     logoPath: fetchedSettings?.logoPath || null,
     companyName: fetchedSettings?.companyName || 'SD Tech Pros',
   };
-  
-  // Use an effect to handle the data separately from the query
-  useEffect(() => {
-    console.log("⭐ Public navbar received settings:", settings);
-    console.log("⭐ Original settings from API:", fetchedSettings);
-    
-    if (settings.logoPath) {
-      console.log("⭐ Public navbar logo path:", settings.logoPath);
-      
-      // Try directly using the full URL for debugging
-      const fullUrl = `http://localhost:5000${settings.logoPath}`;
-      console.log("⭐ Trying full URL:", fullUrl);
-      
-      // Set the logo URL with the full URL for testing
-      setLogoUrl(fullUrl);
-      
-      // Try to preload the image to check if it's accessible
-      const img = new Image();
-      img.onload = () => console.log("⭐ Public navbar preload logo SUCCESS:", fullUrl);
-      img.onerror = (e) => console.error("⭐ Public navbar preload logo FAILED:", e);
-      img.src = fullUrl;
-      
-      // Also try the original path
-      const img2 = new Image();
-      img2.onload = () => console.log("⭐ Original path preload SUCCESS:", settings.logoPath);
-      img2.onerror = (e) => console.error("⭐ Original path preload FAILED:", e);
-      img2.src = settings.logoPath;
-    } else {
-      console.log("⭐ No logo path found in settings");
-      setLogoUrl(null);
-    }
-  }, [settings.logoPath, fetchedSettings]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -88,23 +56,12 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            {/* Logo with cache busting */}
+            {/* Logo with dedicated component */}
             <Link href="/" className="flex items-center">
-              {logoUrl ? (
-                <img 
-                  src={logoUrl} 
-                  className="h-10 w-auto" 
-                  alt={settings.companyName}
-                  onError={(e) => {
-                    console.error("Error loading logo in public navbar:", e);
-                    // Set a fallback to text logo
-                    setLogoUrl(null);
-                  }}
-                  onLoad={() => console.log("Logo loaded successfully in public navbar:", logoUrl)}
-                />
-              ) : (
-                <span className="text-primary-700 font-bold text-xl">{settings.companyName}</span>
-              )}
+              <Logo 
+                className="h-10 w-auto" 
+                fallbackText={settings.companyName}
+              />
             </Link>
           </div>
 
