@@ -12,6 +12,9 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 // Auth middleware to ensure user is authenticated
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
