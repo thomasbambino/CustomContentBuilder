@@ -45,6 +45,7 @@ import {
   ExternalLink,
   Loader2,
   AlertCircle,
+  X,
 } from "lucide-react";
 
 interface FreshbooksStatus {
@@ -253,10 +254,10 @@ export default function AdminSettings() {
                             Cancel
                           </Button>
                         </div>
-                      ) : settings?.["company.logo"] ? (
+                      ) : settings?.logoPath ? (
                         <div className="text-center">
                           <img
-                            src={settings["company.logo"]}
+                            src={settings.logoPath}
                             alt="Current Logo"
                             className="max-h-32 mx-auto mb-4 rounded"
                           />
