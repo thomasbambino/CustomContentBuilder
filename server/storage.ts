@@ -13,7 +13,7 @@ import {
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { eq, and, desc, asc } from 'drizzle-orm';
+import { eq, and, desc, asc, SQL } from 'drizzle-orm';
 import postgres from 'postgres';
 import connectPg from "connect-pg-simple";
 
@@ -561,31 +561,22 @@ export class DatabaseStorage implements IStorage {
         return undefined;
       }
       
-      // Use the raw SQL approach since we're having issues with the fluent API
-      const result = await this.client`
-        UPDATE users 
-        SET 
-          name = ${userUpdate.name || existingUser.name},
-          email = ${userUpdate.email || existingUser.email},
-          username = ${userUpdate.username || existingUser.username},
-          updated_at = ${new Date()}
-        WHERE id = ${id}
-        RETURNING *
-      `;
+      // Prepare the update data
+      const updateData: Partial<User> = {
+        ...userUpdate,
+        updatedAt: new Date()
+      };
       
+      // Using the eq function for safer comparisons
+      const result = await this.db
+        .update(users)
+        .set(updateData)
+        .where(eq(users.id, id))
+        .returning();
+        
       if (result && result.length > 0) {
-        const updatedUser = {
-          id: result[0].id,
-          username: result[0].username,
-          password: result[0].password,
-          name: result[0].name,
-          email: result[0].email,
-          role: result[0].role,
-          createdAt: result[0].created_at,
-          updatedAt: result[0].updated_at
-        };
-        console.log('Updated user result:', updatedUser);
-        return updatedUser;
+        console.log('Updated user result:', result[0]);
+        return result[0];
       }
       
       console.log('No user updated');
