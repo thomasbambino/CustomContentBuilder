@@ -724,25 +724,11 @@ export class DatabaseStorage implements IStorage {
   
   // Settings operations
   async getSettings(): Promise<Setting | undefined> {
-    const result = await this.client`
-      SELECT 
-        id, 
-        company_name AS "companyName", 
-        logo_path AS "logoPath", 
-        primary_color AS "primaryColor", 
-        theme, 
-        radius, 
-        site_title AS "siteTitle", 
-        site_description AS "siteDescription", 
-        favicon,
-        updated_at AS "updatedAt"
-      FROM settings
-      LIMIT 1
-    `;
+    const result = await this.db.select().from(settings).limit(1);
     
     if (result.length === 0) return undefined;
     
-    return result[0] as Setting;
+    return result[0];
   }
   
   async updateSettings(settingsUpdate: Partial<Setting>): Promise<Setting | undefined> {
@@ -763,32 +749,34 @@ export class DatabaseStorage implements IStorage {
     try {
       if (existingSettings) {
         // Update existing settings
-        const tableName = 'settings';
-        const columns = Object.keys(dataToUpdate);
-        const setValues = columns.map(col => `${col.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)} = ?`).join(', ');
-        const values = Object.values(dataToUpdate);
+        const [updatedSettings] = await this.db
+          .update(settings)
+          .set(dataToUpdate)
+          .where(eq(settings.id, existingSettings.id))
+          .returning();
         
-        await this.client(`UPDATE ${tableName} SET ${setValues} WHERE id = $${values.length + 1}`, [...values, existingSettings.id]);
+        return updatedSettings;
       } else {
         // Insert new settings with defaults
-        await this.client(`
-          INSERT INTO settings (
-            company_name, logo_path, primary_color, theme, radius, site_title, site_description, favicon, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-        `, [
-          updateData.companyName || 'SD Tech Pros',
-          updateData.logoPath || null,
-          updateData.primaryColor || 'hsl(222.2 47.4% 11.2%)',
-          updateData.theme || 'light',
-          updateData.radius || 0.5,
-          updateData.siteTitle || 'SD Tech Pros Client Portal',
-          updateData.siteDescription || null,
-          updateData.favicon || null,
-          now
-        ]);
+        const defaultSettings = {
+          companyName: updateData.companyName || 'SD Tech Pros',
+          logoPath: updateData.logoPath || null,
+          primaryColor: updateData.primaryColor || 'hsl(222.2 47.4% 11.2%)',
+          theme: updateData.theme || 'light',
+          radius: updateData.radius !== undefined ? updateData.radius : 0.5,
+          siteTitle: updateData.siteTitle || 'SD Tech Pros Client Portal',
+          siteDescription: updateData.siteDescription || null,
+          favicon: updateData.favicon || null,
+          updatedAt: now
+        };
+        
+        const [newSettings] = await this.db
+          .insert(settings)
+          .values(defaultSettings)
+          .returning();
+        
+        return newSettings;
       }
-      
-      return this.getSettings();
     } catch (error) {
       console.error('Error updating settings:', error);
       return existingSettings;
