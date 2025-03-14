@@ -356,7 +356,7 @@ export default function ProjectsPage() {
                           <FormLabel>Status</FormLabel>
                           <FormControl>
                             <Select 
-                              value={field.value} 
+                              value={field.value || 'planning'} 
                               onValueChange={field.onChange}
                             >
                               <SelectTrigger>
@@ -437,7 +437,7 @@ export default function ProjectsPage() {
                       name="progress"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Progress ({field.value}%)</FormLabel>
+                          <FormLabel>Progress ({field.value || 0}%)</FormLabel>
                           <FormControl>
                             <Input 
                               type="range" 
@@ -445,7 +445,7 @@ export default function ProjectsPage() {
                               max="100" 
                               step="5"
                               {...field}
-                              value={field.value}
+                              value={field.value || 0}
                               onChange={(e) => field.onChange(parseInt(e.target.value))}
                             />
                           </FormControl>
@@ -677,7 +677,7 @@ export default function ProjectsPage() {
                       <FormLabel>Status</FormLabel>
                       <FormControl>
                         <Select 
-                          value={field.value} 
+                          value={field.value || "planning"} 
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger>
@@ -720,7 +720,11 @@ export default function ProjectsPage() {
                       <FormItem>
                         <FormLabel>Due Date</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} value={field.value || ""} />
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value) : ""} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -754,7 +758,7 @@ export default function ProjectsPage() {
                   name="progress"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Progress ({field.value}%)</FormLabel>
+                      <FormLabel>Progress ({field.value || 0}%)</FormLabel>
                       <FormControl>
                         <Input 
                           type="range" 
@@ -762,7 +766,7 @@ export default function ProjectsPage() {
                           max="100" 
                           step="5"
                           {...field}
-                          value={field.value}
+                          value={field.value || 0}
                           onChange={(e) => field.onChange(parseInt(e.target.value))}
                         />
                       </FormControl>
