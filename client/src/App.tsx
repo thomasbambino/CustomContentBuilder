@@ -9,6 +9,9 @@ import { ProtectedRoute } from "@/lib/protected-route";
 import AuthPage from "@/pages/auth-page";
 import PublicHome from "@/pages/public-home";
 import InquiryForm from "@/pages/inquiry-form";
+import { useEffect } from "react";
+import { useSettings } from "@/hooks/use-settings";
+import DynamicFavicon from "@/components/layout/DynamicFavicon";
 
 // Admin pages
 import AdminDashboard from "@/pages/admin/dashboard";
@@ -65,6 +68,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SettingsProvider>
+          <DynamicFavicon defaultFavicon="/favicon.ico" />
           <Router />
           <Toaster />
         </SettingsProvider>
