@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/lib/protected-route";
 import AuthPage from "@/pages/auth-page";
 import PublicHome from "@/pages/public-home";
 import InquiryForm from "@/pages/inquiry-form";
+import LogoTest from "@/pages/logo-test";
 import { useEffect } from "react";
 import { useSettings } from "@/hooks/use-settings";
 import DynamicFavicon from "@/components/layout/DynamicFavicon";
@@ -38,6 +39,7 @@ function Router() {
       <Route path="/" component={PublicHome} />
       <Route path="/inquiry" component={InquiryForm} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/logo-test" component={LogoTest} />
       
       {/* Admin routes */}
       <ProtectedRoute path="/admin" role="admin" component={AdminDashboard} />
