@@ -16,16 +16,12 @@ export default function Navbar() {
   // Handle logo URL with cache busting
   useEffect(() => {
     if (logoUrl) {
-      // Add timestamp to bust cache
-      const timestamp = Date.now();
-      const processedUrl = logoUrl.includes('?') 
-        ? `${logoUrl}&t=${timestamp}` 
-        : `${logoUrl}?t=${timestamp}`;
-      
-      setLogoSrc(processedUrl);
-      console.log("Logo URL updated with cache busting:", processedUrl);
+      // Cache busting is now handled in the theme provider
+      setLogoSrc(logoUrl);
+      console.log("Setting logo src in navbar:", logoUrl);
     } else {
       setLogoSrc(null);
+      console.log("No logo URL available");
     }
   }, [logoUrl]);
   
@@ -76,11 +72,12 @@ export default function Navbar() {
             {logoSrc ? (
               <img 
                 src={logoSrc} 
-                className="h-8 w-8 rounded" 
+                className="h-8 w-auto rounded" 
                 alt={companyName}
                 onError={(e) => {
                   console.error("Error loading logo:", e);
-                  (e.target as HTMLImageElement).style.display = 'none';
+                  // Don't hide the image, fall back to the letter logo
+                  setLogoSrc(null);
                 }} 
                 onLoad={() => console.log("Logo loaded successfully in navbar:", logoSrc)}
               />

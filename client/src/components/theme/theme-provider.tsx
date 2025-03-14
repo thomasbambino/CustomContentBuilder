@@ -50,15 +50,25 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       console.log("Logo path from API:", settings.logoPath);
       console.log("Favicon path from API:", settings.favicon);
       
+      // Apply cache busting for logo URL
+      let processedLogoUrl = null;
+      if (settings.logoPath) {
+        const timestamp = Date.now();
+        processedLogoUrl = settings.logoPath.includes('?') 
+          ? `${settings.logoPath}&t=${timestamp}` 
+          : `${settings.logoPath}?t=${timestamp}`;
+        console.log("Processed logo URL with cache busting:", processedLogoUrl);
+      }
+      
       setState({
         primaryColor: settings.primaryColor || state.primaryColor,
         companyName: settings.companyName || state.companyName,
         theme: (settings.theme as "light" | "dark") || state.theme,
-        logoUrl: settings.logoPath || null,
+        logoUrl: processedLogoUrl,
         faviconUrl: settings.favicon || null
       });
       
-      console.log("Updated state with logoUrl:", settings.logoPath, "and faviconUrl:", settings.favicon);
+      console.log("Updated state with logoUrl:", processedLogoUrl, "and faviconUrl:", settings.favicon);
     }
   }, [settings]);
 
