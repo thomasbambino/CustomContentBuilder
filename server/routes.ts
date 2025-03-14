@@ -16,6 +16,21 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
+// Helper function to get file extension from MIME type
+function getExtensionFromMimeType(mimeType: string): string {
+  const mimeToExt: Record<string, string> = {
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/gif': '.gif',
+    'image/svg+xml': '.svg',
+    'image/webp': '.webp',
+    'image/x-icon': '.ico',
+    'image/vnd.microsoft.icon': '.ico'
+  };
+  
+  return mimeToExt[mimeType] || '.img';
+}
+
 // Auth middleware to ensure user is authenticated
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
@@ -56,10 +71,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     },
     filename: (req, file, cb) => {
       const timestamp = Date.now();
-      const ext = path.extname(file.originalname);
+      // Make sure we preserve the file extension for proper MIME type detection
+      const ext = path.extname(file.originalname) || getExtensionFromMimeType(file.mimetype);
       
       // Use file.fieldname (like 'logo' or 'favicon') to name the file properly
-      const filename = `${file.fieldname}_${timestamp}${ext}`;
+      // Include the file extension in the name to ensure browser compatibility
+      const filename = `${file.fieldname}-${timestamp}${ext}`;
+      console.log(`Creating file: ${filename} with mimetype: ${file.mimetype}`);
       cb(null, filename);
     }
   });
