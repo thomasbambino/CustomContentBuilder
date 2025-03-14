@@ -12,7 +12,8 @@ import {
   FileEdit,
   Settings,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  User
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -68,6 +69,7 @@ export default function AdminSidebar() {
     { href: "/admin/users", icon: <UserCog size={20} />, text: "Users" },
     { href: "/admin/content", icon: <FileEdit size={20} />, text: "Content" },
     { href: "/admin/settings", icon: <Settings size={20} />, text: "Settings" },
+    { href: "/admin/profile", icon: <User size={20} />, text: "My Profile" },
   ];
 
   return (
