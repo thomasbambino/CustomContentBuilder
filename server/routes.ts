@@ -68,18 +68,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   const multerStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-      // Save to client uploads directory
+      // Save to client uploads directory first
       cb(null, clientUploadDir);
     },
     filename: (req, file, cb) => {
       const timestamp = Date.now();
       // Make sure we preserve the file extension for proper MIME type detection
+      // First check if original filename has an extension, otherwise get one from MIME type
       const ext = path.extname(file.originalname) || getExtensionFromMimeType(file.mimetype);
       
       // Use file.fieldname (like 'logo' or 'favicon') to name the file properly
       // Include the file extension in the name to ensure browser compatibility
       const filename = `${file.fieldname}-${timestamp}${ext}`;
       console.log(`Creating file: ${filename} with mimetype: ${file.mimetype}`);
+      
+      // Ensure server upload directory exists in case it was deleted
+      if (!fs.existsSync(serverUploadDir)) {
+        fs.mkdirSync(serverUploadDir, { recursive: true });
+      }
+      
       cb(null, filename);
     }
   });
@@ -695,6 +702,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const sourceFile = path.join(clientUploadDir, req.file.filename);
         const destFile = path.join(serverUploadDir, req.file.filename);
+        
+        // Make sure server uploads directory exists
+        if (!fs.existsSync(serverUploadDir)) {
+          fs.mkdirSync(serverUploadDir, { recursive: true });
+        }
+        
+        // Copy the file to server/public/uploads
         fs.copyFileSync(sourceFile, destFile);
         console.log(`Logo file copied to server public directory: ${destFile}`);
       } catch (copyErr) {
@@ -750,6 +764,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const sourceFile = path.join(clientUploadDir, req.file.filename);
         const destFile = path.join(serverUploadDir, req.file.filename);
+        
+        // Make sure server uploads directory exists
+        if (!fs.existsSync(serverUploadDir)) {
+          fs.mkdirSync(serverUploadDir, { recursive: true });
+        }
+        
+        // Copy the file to server/public/uploads
         fs.copyFileSync(sourceFile, destFile);
         console.log(`Favicon file copied to server public directory: ${destFile}`);
       } catch (copyErr) {
