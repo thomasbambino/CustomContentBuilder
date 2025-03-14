@@ -37,16 +37,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
   
   // Configure multer for file uploads
-  const uploadDir = path.join(process.cwd(), 'client/public/uploads');
+  const clientUploadDir = path.join(process.cwd(), 'client/public/uploads');
+  const serverUploadDir = path.join(process.cwd(), 'server/public/uploads');
   
-  // Create uploads directory if it doesn't exist
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+  // Create uploads directories if they don't exist
+  if (!fs.existsSync(clientUploadDir)) {
+    fs.mkdirSync(clientUploadDir, { recursive: true });
+  }
+  
+  if (!fs.existsSync(serverUploadDir)) {
+    fs.mkdirSync(serverUploadDir, { recursive: true });
   }
   
   const multerStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, uploadDir);
+      // Save to client uploads directory
+      cb(null, clientUploadDir);
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -659,6 +665,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get the relative path to use in the frontend
       const relativePath = `/uploads/${req.file.filename}`;
+      
+      // Copy the uploaded file to server/public/uploads for static serving
+      try {
+        const sourceFile = path.join(clientUploadDir, req.file.filename);
+        const destFile = path.join(serverUploadDir, req.file.filename);
+        fs.copyFileSync(sourceFile, destFile);
+        console.log(`Logo file copied to server public directory: ${destFile}`);
+      } catch (copyErr) {
+        console.error('Error copying logo file to server directory:', copyErr);
+        // Continue even if copy fails, as we still have the file in client/public
+      }
       
       // Update settings with the new logo path
       const settings = await storage.getSettings();
