@@ -751,100 +751,66 @@ export class DatabaseStorage implements IStorage {
     // Remove internal properties that should not be stored
     const { id, updatedAt, ...updateData } = settingsUpdate;
     
-    // Prepare SQL update based on the object properties
-    let updateColumns = '';
-    const updateValues: any[] = [];
-    
-    // For camelCase to snake_case conversion
-    const toSnakeCase = (str: string) => str.replace(/([A-Z])/g, '_$1').toLowerCase();
-    
-    // Build column updates
-    for (const [key, value] of Object.entries(updateData)) {
-      if (updateColumns) updateColumns += ', ';
-      
-      // Convert camelCase keys to snake_case for the database
-      const dbKey = toSnakeCase(key);
-      updateColumns += `${dbKey} = $${updateValues.length + 1}`;
-      updateValues.push(value);
-    }
-    
-    // Add updated_at timestamp
-    if (updateColumns) {
-      updateColumns += `, updated_at = $${updateValues.length + 1}`;
-      updateValues.push(now);
-    }
+    // Update data with timestamp
+    const dataToUpdate = {
+      ...updateData,
+      updatedAt: now
+    };
     
     // Check if settings exist
-    const settings = await this.getSettings();
+    const existingSettings = await this.getSettings();
     
-    if (settings) {
-      // Update existing settings
-      if (updateColumns) {
-        await this.client.query(
-          `UPDATE settings SET ${updateColumns}`,
-          ...updateValues
-        );
+    try {
+      if (existingSettings) {
+        // Update existing settings
+        const tableName = 'settings';
+        const columns = Object.keys(dataToUpdate);
+        const setValues = columns.map(col => `${col.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)} = ?`).join(', ');
+        const values = Object.values(dataToUpdate);
+        
+        await this.client.query(`UPDATE ${tableName} SET ${setValues} WHERE id = ?`, [...values, existingSettings.id]);
+      } else {
+        // Insert new settings with defaults
+        await this.client.query(`
+          INSERT INTO settings (
+            company_name, logo_path, primary_color, theme, radius, site_title, site_description, favicon, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+          updateData.companyName || 'SD Tech Pros',
+          updateData.logoPath || null,
+          updateData.primaryColor || 'hsl(222.2 47.4% 11.2%)',
+          updateData.theme || 'light',
+          updateData.radius || 0.5,
+          updateData.siteTitle || 'SD Tech Pros Client Portal',
+          updateData.siteDescription || null,
+          updateData.favicon || null,
+          now
+        ]);
       }
-    } else {
-      // Insert new settings with reasonable defaults
-      await this.client.query(
-        `INSERT INTO settings (
-          company_name, 
-          logo_path, 
-          primary_color, 
-          theme, 
-          radius, 
-          site_title, 
-          site_description, 
-          favicon, 
-          updated_at
-        ) VALUES (
-          'SD Tech Pros', 
-          null, 
-          'hsl(222.2 47.4% 11.2%)', 
-          'light', 
-          0.5, 
-          'SD Tech Pros Client Portal', 
-          null, 
-          null, 
-          $1
-        )`,
-        now
-      );
       
-      // Update with new values if any
-      if (updateColumns) {
-        await this.client.query(
-          `UPDATE settings SET ${updateColumns}`,
-          ...updateValues
-        );
-      }
+      return this.getSettings();
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      return existingSettings;
     }
-    
-    return this.getSettings();
   }
   
   // Content operations
   async getContent(id: number): Promise<Content | undefined> {
-    const [content] = await this.db.select().from(contents).where(({ id: contentId }) => contentId.equals(id));
+    const [content] = await this.db.select().from(contents).where(eq(contents.id, id));
     return content;
   }
   
   async getContentByType(type: string): Promise<Content[]> {
-    return await this.client`
-      SELECT 
-        id,
-        type,
-        title,
-        subtitle,
-        content,
-        image_path AS "imagePath",
-        "order",
-        is_active AS "isActive",
-        updated_at AS "updatedAt"
-      FROM contents 
-      WHERE type = ${type} AND is_active = true
-    `;
+    return await this.db
+      .select()
+      .from(contents)
+      .where(
+        and(
+          eq(contents.type, type),
+          eq(contents.isActive, true)
+        )
+      );
   }
   
   async createContent(content: InsertContent): Promise<Content> {
@@ -856,13 +822,13 @@ export class DatabaseStorage implements IStorage {
     const [updatedContent] = await this.db
       .update(contents)
       .set({ ...contentUpdate, updatedAt: new Date() })
-      .where(({ id: contentId }) => contentId.equals(id))
+      .where(eq(contents.id, id))
       .returning();
     return updatedContent;
   }
   
   async deleteContent(id: number): Promise<boolean> {
-    const result = await this.db.delete(contents).where(({ id: contentId }) => contentId.equals(id));
+    const result = await this.db.delete(contents).where(eq(contents.id, id));
     return true; // Assuming operation was successful
   }
   
