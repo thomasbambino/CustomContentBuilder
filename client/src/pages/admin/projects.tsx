@@ -311,7 +311,11 @@ export default function ProjectsPage() {
                         <FormItem>
                           <FormLabel>Description</FormLabel>
                           <FormControl>
-                            <Textarea placeholder="Enter project description" {...field} />
+                            <Textarea 
+                              placeholder="Enter project description" 
+                              {...field} 
+                              value={field.value || ''} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -378,7 +382,11 @@ export default function ProjectsPage() {
                           <FormItem>
                             <FormLabel>Start Date</FormLabel>
                             <FormControl>
-                              <Input type="date" {...field} value={field.value || ""} />
+                              <Input 
+                                type="date" 
+                                {...field} 
+                                value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value) : ""} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -391,7 +399,11 @@ export default function ProjectsPage() {
                           <FormItem>
                             <FormLabel>Due Date</FormLabel>
                             <FormControl>
-                              <Input type="date" {...field} value={field.value || ""} />
+                              <Input 
+                                type="date" 
+                                {...field} 
+                                value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value) : ""} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -691,7 +703,11 @@ export default function ProjectsPage() {
                       <FormItem>
                         <FormLabel>Start Date</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} value={field.value || ""} />
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value) : ""} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
