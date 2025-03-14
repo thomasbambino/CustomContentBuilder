@@ -58,9 +58,10 @@ interface User {
   id: number;
   username: string;
   email: string;
-  fullName: string;
+  name: string; // This is fullName in the database
   role: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 // Form schema for creating a new user
@@ -114,7 +115,7 @@ export default function AdminUsers() {
   // Create user mutation
   const createUserMutation = useMutation({
     mutationFn: async (data: CreateUserValues) => {
-      const response = await apiRequest('POST', '/api/register', data);
+      const response = await apiRequest('POST', '/api/users', data);
       return response.json();
     },
     onSuccess: () => {
@@ -150,7 +151,7 @@ export default function AdminUsers() {
   const filteredUsers = users.filter(user => 
     user.username.toLowerCase().includes(searchTerm.toLowerCase()) || 
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Format date
@@ -194,12 +195,59 @@ export default function AdminUsers() {
       .substring(0, 2);
   };
 
-  // Reset password function (would be implemented with a full mutation)
+  // Reset password function
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      const response = await apiRequest('POST', `/api/users/${userId}/reset-password`, {});
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Password reset successful",
+        description: `Temporary password: ${data.tempPassword}`,
+      });
+      
+      // In a production environment, you would want to handle this differently,
+      // likely sending an email with the password rather than displaying it in the UI
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Password reset failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Update user role function
+  const updateRoleMutation = useMutation({
+    mutationFn: async ({ userId, role }: { userId: number; role: string }) => {
+      const response = await apiRequest('PUT', `/api/users/${userId}`, { role });
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      toast({
+        title: "Role updated",
+        description: `User is now a ${variables.role === 'admin' ? 'administrator' : 'regular user'}.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Role update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
   const handleResetPassword = (userId: number) => {
-    toast({
-      title: "Password reset",
-      description: "A temporary password has been sent to the user.",
-    });
+    resetPasswordMutation.mutate(userId);
+  };
+  
+  const handleToggleRole = (user: User) => {
+    const newRole = user.role === 'admin' ? 'client' : 'admin';
+    updateRoleMutation.mutate({ userId: user.id, role: newRole });
   };
 
   return (
@@ -374,9 +422,9 @@ export default function AdminUsers() {
                           <TableCell>
                             <div className="flex items-center">
                               <div className="w-9 h-9 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center mr-3 font-medium">
-                                {getUserInitials(user.fullName)}
+                                {getUserInitials(user.name)}
                               </div>
-                              <span className="font-medium">{user.fullName}</span>
+                              <span className="font-medium">{user.name}</span>
                             </div>
                           </TableCell>
                           <TableCell>{user.username}</TableCell>
@@ -398,7 +446,7 @@ export default function AdminUsers() {
                                 </DialogTrigger>
                                 <DialogContent>
                                   <DialogHeader>
-                                    <DialogTitle>Manage User: {user.fullName}</DialogTitle>
+                                    <DialogTitle>Manage User: {user.name}</DialogTitle>
                                     <DialogDescription>
                                       {user.username} ({user.email})
                                     </DialogDescription>
@@ -418,8 +466,14 @@ export default function AdminUsers() {
                                         <Button 
                                           variant={user.role === 'admin' ? 'outline' : 'default'}
                                           className="justify-start"
+                                          onClick={() => handleToggleRole(user)}
+                                          disabled={updateRoleMutation.isPending}
                                         >
-                                          <ShieldCheck className="mr-2 h-4 w-4" />
+                                          {updateRoleMutation.isPending ? (
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                          ) : (
+                                            <ShieldCheck className="mr-2 h-4 w-4" />
+                                          )}
                                           {user.role === 'admin' ? 'Remove Admin Rights' : 'Make Administrator'}
                                         </Button>
                                         <Button variant="destructive" className="justify-start">
