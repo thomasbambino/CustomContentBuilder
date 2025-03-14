@@ -16,20 +16,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-// Helper function to get file extension from MIME type
-function getExtensionFromMimeType(mimeType: string): string {
-  const mimeToExt: Record<string, string> = {
-    'image/jpeg': '.jpg',
-    'image/png': '.png',
-    'image/gif': '.gif',
-    'image/svg+xml': '.svg',
-    'image/webp': '.webp',
-    'image/x-icon': '.ico',
-    'image/vnd.microsoft.icon': '.ico'
-  };
-  
-  return mimeToExt[mimeType] || '.img';
-}
+
 
 // Auth middleware to ensure user is authenticated
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
@@ -50,6 +37,21 @@ const hasRole = (role: string) => (req: Request, res: Response, next: NextFuncti
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
+  
+  // Helper function to get file extension from MIME type
+  const getExtensionFromMimeType = (mimeType: string): string => {
+    const mimeToExt: Record<string, string> = {
+      'image/jpeg': '.jpg',
+      'image/png': '.png',
+      'image/gif': '.gif',
+      'image/svg+xml': '.svg',
+      'image/webp': '.webp',
+      'image/x-icon': '.ico',
+      'image/vnd.microsoft.icon': '.ico'
+    };
+    
+    return mimeToExt[mimeType] || '.img';
+  };
   
   // Configure multer for file uploads
   const clientUploadDir = path.join(process.cwd(), 'client/public/uploads');
