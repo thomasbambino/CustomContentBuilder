@@ -131,7 +131,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, themeMode, setThem
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <Link href={user?.role === "admin" ? "/admin" : "/client/profile"}>
+                  <Link href={user?.role === "admin" ? "/admin/profile" : "/client/profile"}>
                     Your Profile
                   </Link>
                 </DropdownMenuItem>
