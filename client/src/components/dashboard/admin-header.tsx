@@ -98,21 +98,13 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href="/admin/profile">
-                  <a className="flex items-center cursor-pointer">
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </a>
-                </Link>
+              <DropdownMenuItem onClick={() => window.location.href = "/admin/profile"}>
+                <UserIcon className="mr-2 h-4 w-4" />
+                <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/settings">
-                  <a className="flex items-center cursor-pointer">
-                    <Settings2Icon className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </a>
-                </Link>
+              <DropdownMenuItem onClick={() => window.location.href = "/admin/branding"}>
+                <Settings2Icon className="mr-2 h-4 w-4" />
+                <span>Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} disabled={logoutMutation.isPending}>
