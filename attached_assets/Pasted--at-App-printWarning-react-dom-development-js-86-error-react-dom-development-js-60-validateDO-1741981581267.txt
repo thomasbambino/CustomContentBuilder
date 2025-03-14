@@ -1,0 +1,59 @@
+    at App
+printWarning @ react-dom.development.js:86
+error @ react-dom.development.js:60
+validateDOMNesting @ react-dom.development.js:10849
+createInstance @ react-dom.development.js:10930
+completeWork @ react-dom.development.js:22226
+completeUnitOfWork @ react-dom.development.js:26635
+performUnitOfWork @ react-dom.development.js:26607
+workLoopSync @ react-dom.development.js:26505
+renderRootSync @ react-dom.development.js:26473
+performSyncWorkOnRoot @ react-dom.development.js:26124
+flushSyncCallbacks @ react-dom.development.js:12042
+(anonymous) @ react-dom.development.js:25690
+setTimeout
+scheduleFn @ notifyManager.ts:22
+flush @ notifyManager.ts:37
+batch @ notifyManager.ts:56
+dispatch_fn @ query.ts:617
+setData @ query.ts:218
+onSuccess @ query.ts:507
+resolve @ retryer.ts:107
+Promise.then
+run @ retryer.ts:159
+start @ retryer.ts:218
+fetch @ query.ts:540
+executeFetch_fn @ queryObserver.ts:346
+onSubscribe @ queryObserver.ts:108
+subscribe @ subscribable.ts:11
+(anonymous) @ useBaseQuery.ts:92
+subscribeToStore @ react-dom.development.js:16139
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24965
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+use-settings.tsx:140 Settings data received: {
+  "id": 1,
+  "companyName": "SD Tech Pros",
+  "logoPath": "/uploads/logo-1741979910954.png",
+  "primaryColor": "hsl(222.2 47.4% 11.2%)",
+  "theme": "light",
+  "radius": 0.5,
+  "siteTitle": "SD Tech Pros",
+  "siteDescription": "",
+  "favicon": "/uploads/favicon-1741978042475.png",
+  "updatedAt": "2025-03-14T19:18:32.328Z"
+}
+DynamicFavicon.tsx:57 Setting favicon to: /uploads/favicon-1741978042475.png?t=1741981562542

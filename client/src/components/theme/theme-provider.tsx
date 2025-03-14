@@ -50,26 +50,29 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       console.log("Logo path from API:", settings.logoPath);
       console.log("Favicon path from API:", settings.favicon);
       
-      // Set the logo URL directly without modification
-      let logoUrl = settings.logoPath || null;
-      console.log("Setting logo URL directly:", logoUrl);
-      
-      // Test if logo is accessible with fetch API
-      if (logoUrl) {
+      // Build a fully qualified URL with the origin
+      let logoUrl: string | null = null;
+      if (settings.logoPath) {
+        // Create a fully qualified URL including the protocol and host
+        const baseUrl = window.location.origin;
+        logoUrl = `${baseUrl}${settings.logoPath}`;
+        console.log("⚠️ Setting fully qualified logo URL:", logoUrl);
+        
+        // Try with the new qualified URL
         fetch(logoUrl)
           .then(response => {
-            console.log(`Theme provider logo fetch status: ${response.status}, type: ${response.headers.get('content-type')}`);
+            console.log(`⚠️ Theme provider FULLY QUALIFIED logo fetch status: ${response.status}, type: ${response.headers.get('content-type')}`);
             if (!response.ok) {
-              console.error(`Failed to fetch logo: ${response.status} ${response.statusText}`);
+              console.error(`⚠️ Failed to fetch FULLY QUALIFIED logo: ${response.status} ${response.statusText}`);
             }
             return response.ok;
           })
-          .catch(err => console.error("Error fetching logo in theme provider:", err));
+          .catch(err => console.error("⚠️ Error fetching FULLY QUALIFIED logo in theme provider:", err));
           
         // Also try with Image preload
         const img = new Image();
-        img.onload = () => console.log("Theme provider preload logo success:", logoUrl);
-        img.onerror = (e) => console.error("Theme provider preload logo failed:", e);
+        img.onload = () => console.log("⚠️ Theme provider preload FULLY QUALIFIED logo SUCCESS:", logoUrl);
+        img.onerror = (e) => console.error("⚠️ Theme provider preload FULLY QUALIFIED logo FAILED:", e);
         img.src = logoUrl;
       }
       

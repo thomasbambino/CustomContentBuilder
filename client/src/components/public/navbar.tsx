@@ -92,7 +92,7 @@ export default function Navbar() {
             <Link href="/" className="flex items-center">
               {logoUrl ? (
                 <img 
-                  src={`${logoUrl}?t=${Date.now()}`} 
+                  src={logoUrl} 
                   className="h-10 w-auto" 
                   alt={settings.companyName}
                   onError={(e) => {
