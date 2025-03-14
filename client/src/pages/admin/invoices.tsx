@@ -281,7 +281,7 @@ export default function InvoicesPage() {
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-sm text-gray-500">Status</p>
-                    <div className="mt-1">{getStatusBadge(selectedInvoice.status)}</div>
+                    <div className="mt-1">{getStatusBadge(selectedInvoice.status || 'pending')}</div>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-500">Amount</p>
@@ -303,11 +303,11 @@ export default function InvoicesPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Invoice Date</p>
-                    <p className="font-medium">{formatDate(selectedInvoice.createdAt)}</p>
+                    <p className="font-medium">{selectedInvoice.createdAt instanceof Date ? formatDate(selectedInvoice.createdAt.toISOString()) : formatDate(selectedInvoice.createdAt)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Due Date</p>
-                    <p className="font-medium">{formatDate(selectedInvoice.dueDate)}</p>
+                    <p className="font-medium">{selectedInvoice.dueDate instanceof Date ? formatDate(selectedInvoice.dueDate.toISOString()) : formatDate(selectedInvoice.dueDate)}</p>
                   </div>
                 </div>
                 
@@ -318,7 +318,7 @@ export default function InvoicesPage() {
                   </div>
                 )}
                 
-                {selectedInvoice.status === "pending" && (
+                {(selectedInvoice.status || "") === "pending" && (
                   <div className="bg-yellow-50 p-3 rounded-md flex items-start">
                     <AlertCircle className="text-yellow-500 h-5 w-5 mt-0.5 mr-2" />
                     <div>
@@ -328,7 +328,7 @@ export default function InvoicesPage() {
                   </div>
                 )}
                 
-                {selectedInvoice.status === "overdue" && (
+                {(selectedInvoice.status || "") === "overdue" && (
                   <div className="bg-red-50 p-3 rounded-md flex items-start">
                     <AlertCircle className="text-red-500 h-5 w-5 mt-0.5 mr-2" />
                     <div>
@@ -338,7 +338,7 @@ export default function InvoicesPage() {
                   </div>
                 )}
                 
-                {selectedInvoice.status === "paid" && (
+                {(selectedInvoice.status || "") === "paid" && (
                   <div className="bg-green-50 p-3 rounded-md flex items-start">
                     <CheckCircle className="text-green-500 h-5 w-5 mt-0.5 mr-2" />
                     <div>
@@ -361,7 +361,7 @@ export default function InvoicesPage() {
                     <Download className="h-4 w-4 mr-1" />
                     Download
                   </Button>
-                  {selectedInvoice.status !== "paid" && (
+                  {(selectedInvoice.status || "") !== "paid" && (
                     <Button 
                       variant="outline" 
                       size="sm"
@@ -372,7 +372,7 @@ export default function InvoicesPage() {
                     </Button>
                   )}
                 </div>
-                {selectedInvoice.status !== "paid" && (
+                {(selectedInvoice.status || "") !== "paid" && (
                   <Button 
                     onClick={() => {
                       handleMarkAsPaid(selectedInvoice.id);
