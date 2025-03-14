@@ -499,16 +499,7 @@ export default function AdminUsers() {
                             </a>
                           </TableCell>
                           <TableCell>{getRoleBadge(user.role)}</TableCell>
-                          <TableCell>
-                            <Badge variant={user.status === 'disabled' ? 'destructive' : 'outline'} className="flex items-center gap-1">
-                              {user.status === 'disabled' ? (
-                                <UserX className="h-3 w-3" />
-                              ) : (
-                                <UserCheck className="h-3 w-3" />
-                              )}
-                              {user.status === 'disabled' ? 'Disabled' : 'Active'}
-                            </Badge>
-                          </TableCell>
+                          <TableCell>{getStatusBadge(user.status)}</TableCell>
                           <TableCell>{formatDate(user.createdAt)}</TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end">
