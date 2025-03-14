@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   BellIcon,
   ChevronDownIcon,
@@ -24,6 +24,7 @@ interface AdminHeaderProps {
 
 export default function AdminHeader({ title }: AdminHeaderProps) {
   const { user, logoutMutation } = useAuth();
+  const [_, navigate] = useLocation();
   const [notifications] = useState([
     { id: 1, text: "New inquiry received", time: "5 minutes ago" },
     { id: 2, text: "Invoice #INV-2023-006 was paid", time: "1 hour ago" },
@@ -98,11 +99,11 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => window.location.href = "/admin/profile"}>
+              <DropdownMenuItem onClick={() => navigate("/admin/profile")}>
                 <UserIcon className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => window.location.href = "/admin/branding"}>
+              <DropdownMenuItem onClick={() => navigate("/admin/branding")}>
                 <Settings2Icon className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
