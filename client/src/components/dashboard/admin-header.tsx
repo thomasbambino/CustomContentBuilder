@@ -34,12 +34,14 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
     logoutMutation.mutate();
   };
 
-  const userInitials = user?.fullName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .substring(0, 2);
+  const userInitials = user?.name
+    ? user.name
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .toUpperCase()
+        .substring(0, 2)
+    : "AU";
 
   return (
     <header className="bg-white shadow-sm z-10 border-b border-secondary-200">
@@ -90,15 +92,19 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-sm font-medium text-secondary-700 hidden md:block">
-                  {user?.fullName || "Admin"}
+                  {user?.name || "Admin"}
                 </span>
                 <ChevronDownIcon className="h-4 w-4 text-secondary-500" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <UserIcon className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+              <DropdownMenuItem asChild>
+                <Link href="/admin/profile">
+                  <a className="flex items-center cursor-pointer">
+                    <UserIcon className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </a>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/admin/settings">
