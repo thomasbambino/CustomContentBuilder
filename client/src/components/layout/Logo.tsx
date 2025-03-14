@@ -11,29 +11,25 @@ export function Logo({ className = "h-10 w-auto", fallbackText = "SD Tech Pros",
   const { settings } = useSettings();
   const [hasError, setHasError] = useState(false);
 
-  // Handle image load errors
-  const handleImageError = () => {
-    console.error("Logo image failed to load");
-    setHasError(true);
-  };
-
-  // If there's no logo path in settings or there was an error loading the image, show fallback text
+  // Super simple approach - just like our test page that works
   if (!settings?.logoPath || hasError) {
+    console.log("Using fallback text for logo");
     return <span className="font-bold text-xl text-primary">{fallbackText}</span>;
   }
 
-  // Add cache busting parameter
-  const timestamp = Date.now();
-  const logoUrl = `${settings.logoPath}?t=${timestamp}`;
-
-  // Show the image directly
+  // Direct approach - use the full path exactly as set in settings without modification
+  // This is the same approach that worked in our test page
+  console.log("Using logo path:", settings.logoPath);
   return (
     <img
-      src={logoUrl}
+      src={settings.logoPath}
       alt="Company Logo"
       className={className}
       style={{ height }}
-      onError={handleImageError}
+      onError={(e) => {
+        console.error("Logo image failed to load:", e);
+        setHasError(true);
+      }}
     />
   );
 }
