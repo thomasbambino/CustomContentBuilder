@@ -50,6 +50,8 @@ import {
   MoreHorizontal,
   ShieldCheck,
   User,
+  UserX,
+  UserCheck,
   Loader2,
   Key,
 } from "lucide-react";
@@ -190,6 +192,30 @@ export default function AdminUsers() {
         );
       default:
         return <Badge variant="outline">{role}</Badge>;
+    }
+  };
+  
+  // Get status badge
+  const getStatusBadge = (status?: string) => {
+    const userStatus = status || 'active';
+    
+    switch (userStatus) {
+      case "disabled":
+        return (
+          <Badge variant="outline" className="bg-red-100 text-red-800 flex items-center gap-1">
+            <UserX className="h-3 w-3" />
+            Disabled
+          </Badge>
+        );
+      case "active":
+        return (
+          <Badge variant="outline" className="bg-green-100 text-green-800 flex items-center gap-1">
+            <UserCheck className="h-3 w-3" />
+            Active
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline">{userStatus}</Badge>;
     }
   };
 
@@ -450,6 +476,7 @@ export default function AdminUsers() {
                         <TableHead>Username</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Role</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>Created</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
@@ -472,6 +499,16 @@ export default function AdminUsers() {
                             </a>
                           </TableCell>
                           <TableCell>{getRoleBadge(user.role)}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.status === 'disabled' ? 'destructive' : 'outline'} className="flex items-center gap-1">
+                              {user.status === 'disabled' ? (
+                                <UserX className="h-3 w-3" />
+                              ) : (
+                                <UserCheck className="h-3 w-3" />
+                              )}
+                              {user.status === 'disabled' ? 'Disabled' : 'Active'}
+                            </Badge>
+                          </TableCell>
                           <TableCell>{formatDate(user.createdAt)}</TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end">
@@ -516,7 +553,7 @@ export default function AdminUsers() {
                                           {user.role === 'admin' ? 'Remove Admin Rights' : 'Make Administrator'}
                                         </Button>
                                         <Button 
-                                          variant="destructive" 
+                                          variant={user.status === 'disabled' ? 'default' : 'destructive'}
                                           className="justify-start"
                                           onClick={() => handleToggleStatus(user)}
                                           disabled={updateStatusMutation.isPending}
@@ -524,7 +561,11 @@ export default function AdminUsers() {
                                           {updateStatusMutation.isPending ? (
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                           ) : (
-                                            <MoreHorizontal className="mr-2 h-4 w-4" />
+                                            user.status === 'disabled' ? (
+                                              <UserCheck className="mr-2 h-4 w-4" />
+                                            ) : (
+                                              <UserX className="mr-2 h-4 w-4" />
+                                            )
                                           )}
                                           {(user.status === 'disabled') ? 'Enable Account' : 'Disable Account'}
                                         </Button>
