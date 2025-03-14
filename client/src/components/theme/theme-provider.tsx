@@ -26,14 +26,14 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   // Fetch settings from the API
   const { data: settings } = useQuery({
-    queryKey: ["/api/settings"],
+    queryKey: ["/api/settings/public"],
     onSuccess: (data) => {
       if (data) {
         setState({
           primaryColor: data.primaryColor || state.primaryColor,
           companyName: data.companyName || state.companyName,
           theme: data.theme as "light" | "dark" || state.theme,
-          logoUrl: data.logoUrl
+          logoUrl: data.logoPath || null
         });
       }
     }
