@@ -221,8 +221,8 @@ export default function ProjectsPage() {
                       <TableCell className="font-medium">{project.name}</TableCell>
                       <TableCell>{project.clientId ? getClientName(project.clientId) : "—"}</TableCell>
                       <TableCell>
-                        <Badge variant={getStatusBadgeVariant(project.status) as any}>
-                          {project.status}
+                        <Badge variant={getStatusBadgeVariant(project.status || 'planning') as any}>
+                          {project.status || 'Planning'}
                         </Badge>
                       </TableCell>
                       <TableCell>
