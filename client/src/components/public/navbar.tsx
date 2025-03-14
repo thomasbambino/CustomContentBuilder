@@ -12,14 +12,8 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   
   // Get company settings
-  const { data: companyName } = useQuery<string>({
-    queryKey: ['/api/settings/company.name'],
-    select: (data) => data.value,
-  });
-
-  const { data: companyLogo } = useQuery<string>({
-    queryKey: ['/api/settings/company.logo'],
-    select: (data) => data.value,
+  const { data: settings } = useQuery({
+    queryKey: ['/api/settings/public'],
   });
 
   // Close menu when clicking outside
@@ -38,15 +32,15 @@ export default function Navbar() {
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
             {/* Logo */}
-            {companyLogo ? (
-              <img src={companyLogo} className="h-8 w-8 rounded" alt="Company Logo" />
+            {settings?.logoPath ? (
+              <img src={settings.logoPath} className="h-8 w-8 rounded" alt="Company Logo" />
             ) : (
               <div className="h-8 w-8 bg-primary rounded flex items-center justify-center text-white font-bold">
-                {companyName?.charAt(0) || 'S'}
+                {settings?.companyName?.charAt(0) || 'S'}
               </div>
             )}
             {/* Company Name */}
-            <span className="text-primary-700 font-bold text-xl">{companyName || 'SD Tech Pros'}</span>
+            <span className="text-primary-700 font-bold text-xl">{settings?.companyName || 'SD Tech Pros'}</span>
           </div>
 
           {/* Navigation Links - Desktop */}
