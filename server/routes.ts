@@ -35,6 +35,40 @@ const hasRole = (role: string) => (req: Request, res: Response, next: NextFuncti
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
+  
+  // Configure multer for file uploads
+  const uploadDir = path.join(process.cwd(), 'client/public/uploads');
+  
+  // Create uploads directory if it doesn't exist
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+  
+  const multerStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const ext = path.extname(file.originalname);
+      cb(null, 'logo' + '-' + uniqueSuffix + ext);
+    }
+  });
+  
+  const upload = multer({ 
+    storage: multerStorage,
+    fileFilter: (req, file, cb) => {
+      // Only accept images
+      if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only image files are allowed'));
+      }
+    },
+    limits: {
+      fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+  });
 
   // Handler for zod validation errors
   const validateRequest = (schema: any) => (req: Request, res: Response, next: NextFunction) => {
@@ -611,6 +645,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(updatedSettings);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Logo upload endpoint
+  app.post("/api/settings/logo", isAuthenticated, hasRole("admin"), upload.single('logo'), async (req, res, next) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      // Get the relative path to use in the frontend
+      const relativePath = `/uploads/${req.file.filename}`;
+      
+      // Update settings with the new logo path
+      const settings = await storage.getSettings();
+      
+      if (!settings) {
+        return res.status(404).json({ message: "Settings not found" });
+      }
+      
+      const updatedSettings = await storage.updateSettings({
+        logoPath: relativePath
+      });
+      
+      if (updatedSettings) {
+        await storage.createActivity({
+          userId: req.user?.id,
+          action: "Logo Updated",
+          details: "Company logo was updated",
+          entityType: "settings",
+          entityId: updatedSettings.id
+        });
+      }
+      
+      res.json({ 
+        url: relativePath,
+        message: "Logo uploaded successfully" 
+      });
     } catch (error) {
       next(error);
     }
