@@ -12,7 +12,14 @@ export default function Navbar() {
   const [location] = useLocation();
   const { companyName, logoUrl, theme } = useTheme();
   console.log("Navbar component - logoUrl:", logoUrl);
-  console.log("Navbar component - theme context:", useTheme());
+  // Debug the image URL and paths
+  if (logoUrl) {
+    console.log("Logo URL format check:", {
+      logoUrl,
+      absoluteUrl: new URL(logoUrl, window.location.origin).href,
+      withoutLeadingSlash: logoUrl.startsWith('/') ? logoUrl.substring(1) : logoUrl
+    });
+  }
   const { user } = useAuth();
 
   // Toggle mobile menu

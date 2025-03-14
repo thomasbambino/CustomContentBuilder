@@ -428,7 +428,20 @@ export default function BrandingPage() {
                       <div className="flex items-center gap-4">
                         <div className="w-24 h-24 bg-gray-100 rounded-md flex items-center justify-center overflow-hidden border">
                           {logoPreview ? (
-                            <img src={logoPreview} alt="Logo preview" className="w-full h-full object-contain" />
+                            <>
+                              <img 
+                                src={logoPreview} 
+                                alt="Logo preview" 
+                                className="w-full h-full object-contain" 
+                                onError={(e) => {
+                                  console.error("Logo image loading error:", e);
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJub25lIj48cGF0aCBmaWxsPSIjY2NjIiBkPSJNNDUgNDVoMTB2MTBINDVWNDVaIi8+PC9zdmc+';
+                                }}
+                                onLoad={() => console.log("Logo image loaded successfully from:", logoPreview)}
+                              />
+                              <div className="mt-1 text-xs text-gray-400 truncate">{logoPreview}</div>
+                            </>
                           ) : (
                             <span className="text-gray-400">No logo</span>
                           )}
