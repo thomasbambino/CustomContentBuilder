@@ -68,7 +68,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, themeMode, setThem
   const redirectPath = user?.role === "admin" ? "/admin" : "/client";
 
   return (
-    <header className="bg-white border-b border-gray-200 z-30 fixed top-0 left-0 right-0">
+    <header className="bg-card border-b border-border z-30 fixed top-0 left-0 right-0">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left: Logo & Menu Toggle */}
@@ -77,7 +77,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, themeMode, setThem
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-gray-500 mr-2 lg:hidden"
+              className="mr-2 lg:hidden"
               aria-label="Toggle Menu"
             >
               <Menu className="h-6 w-6" />
@@ -97,7 +97,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, themeMode, setThem
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="text-gray-500 hover:bg-gray-100 rounded-full"
+              className="rounded-full"
               aria-label="Toggle Theme"
             >
               {themeMode === "dark" ? (
@@ -111,7 +111,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, themeMode, setThem
             <Button
               variant="ghost"
               size="icon"
-              className="text-gray-500 hover:bg-gray-100 rounded-full relative"
+              className="rounded-full relative"
               aria-label="Notifications"
             >
               <BellDot className="h-5 w-5" />

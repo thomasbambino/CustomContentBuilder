@@ -24,7 +24,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
   
   // Apply theme changes to document
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', themeMode === 'dark');
+    const root = document.documentElement;
+    if (themeMode === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
   }, [themeMode]);
   
   // Define which pages should show the sidebar
@@ -36,7 +41,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   };
   
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Only show header and sidebar for authenticated pages */}
       {user && (
         <>
