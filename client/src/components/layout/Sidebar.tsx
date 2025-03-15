@@ -40,7 +40,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
       {/* Sidebar */}
       <aside 
         className={cn(
-          "bg-white border-r border-gray-200 w-64 fixed inset-y-0 pt-16 transition-transform duration-300 z-20 lg:transform-none",
+          "bg-card border-r border-border w-64 fixed inset-y-0 pt-16 transition-transform duration-300 z-20 lg:transform-none",
           sidebarOpen ? "transform-none" : "-translate-x-full lg:translate-x-0",
           "lg:block"
         )}
@@ -49,7 +49,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
           {/* Admin Navigation */}
           {user?.role === "admin" && (
             <>
-              <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Dashboard
               </p>
               
@@ -59,8 +59,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                       isActive("/admin")
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted"
                     )}
                     onClick={handleLinkClick}
                   >
@@ -74,8 +74,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                       isActive("/admin/clients")
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted"
                     )}
                     onClick={handleLinkClick}
                   >
@@ -89,8 +89,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                       isActive("/admin/projects")
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted"
                     )}
                     onClick={handleLinkClick}
                   >
@@ -104,8 +104,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                       isActive("/admin/invoices")
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted"
                     )}
                     onClick={handleLinkClick}
                   >
@@ -119,19 +119,19 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                       isActive("/admin/inquiries")
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted"
                     )}
                     onClick={handleLinkClick}
                   >
                     <Inbox className="h-5 w-5 mr-3" />
                     <span>Inquiries</span>
-                    <span className="ml-auto bg-primary-100 text-primary-800 py-0.5 px-2 rounded-full text-xs">5</span>
+                    <span className="ml-auto bg-primary/20 text-primary py-0.5 px-2 rounded-full text-xs">5</span>
                   </a>
                 </Link>
               </nav>
               
-              <p className="mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              <p className="mt-8 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Content Management
               </p>
               
@@ -141,8 +141,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                       isActive("/admin/content-editor")
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted"
                     )}
                     onClick={handleLinkClick}
                   >
@@ -156,8 +156,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                       isActive("/admin/branding")
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted"
                     )}
                     onClick={handleLinkClick}
                   >
@@ -171,8 +171,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                       isActive("/admin/users")
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted"
                     )}
                     onClick={handleLinkClick}
                   >
@@ -186,8 +186,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     className={cn(
                       "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                       isActive("/admin/api-connections")
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted"
                     )}
                     onClick={handleLinkClick}
                   >
@@ -207,8 +207,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                   className={cn(
                     "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                     isActive("/client")
-                      ? "bg-primary-50 text-primary-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-muted"
                   )}
                   onClick={handleLinkClick}
                 >
@@ -222,8 +222,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                   className={cn(
                     "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                     isActive("/client/projects")
-                      ? "bg-primary-50 text-primary-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-muted"
                   )}
                   onClick={handleLinkClick}
                 >
@@ -237,8 +237,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                   className={cn(
                     "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                     isActive("/client/invoices")
-                      ? "bg-primary-50 text-primary-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-muted"
                   )}
                   onClick={handleLinkClick}
                 >
@@ -252,8 +252,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                   className={cn(
                     "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                     isActive("/client/messages")
-                      ? "bg-primary-50 text-primary-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-muted"
                   )}
                   onClick={handleLinkClick}
                 >
@@ -267,8 +267,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                   className={cn(
                     "flex items-center px-3 py-2 text-sm font-medium rounded-md",
                     isActive("/client/profile")
-                      ? "bg-primary-50 text-primary-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-muted"
                   )}
                   onClick={handleLinkClick}
                 >
@@ -284,7 +284,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-10 bg-gray-900 bg-opacity-50 lg:hidden"
+          className="fixed inset-0 z-10 bg-background/80 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
