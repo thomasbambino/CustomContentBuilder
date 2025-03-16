@@ -22,7 +22,7 @@ export default function StatsCard({
   onClick
 }: StatsCardProps) {
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg">
+    <div className="bg-card overflow-hidden shadow rounded-lg border">
       <div className="p-5">
         <div className="flex items-center">
           <div className={cn("flex-shrink-0 rounded-md p-3", iconBgColor)}>
@@ -30,18 +30,18 @@ export default function StatsCard({
           </div>
           <div className="ml-5 w-0 flex-1">
             <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate">
+              <dt className="text-sm font-medium text-muted-foreground truncate">
                 {title}
               </dt>
               <dd>
-                <div className="text-lg font-bold text-gray-900">{value}</div>
+                <div className="text-lg font-bold text-foreground">{value}</div>
               </dd>
             </dl>
           </div>
         </div>
       </div>
       {(linkText && linkHref) && (
-        <div className="bg-gray-50 px-5 py-3">
+        <div className="bg-muted/50 px-5 py-3">
           <div className="text-sm">
             <a 
               href={linkHref}
@@ -51,7 +51,7 @@ export default function StatsCard({
                   onClick();
                 }
               }}
-              className="font-medium text-primary-600 hover:text-primary-500"
+              className="font-medium text-primary hover:text-primary/80"
             >
               {linkText}
             </a>
