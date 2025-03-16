@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   GitBranch,
-  FileInvoice,
   FileText,
+  Receipt,
   Headphones,
   UserCircle,
   ChevronDown,
@@ -27,11 +27,16 @@ function SidebarItem({ href, icon, children, isActive }: SidebarItemProps) {
         className={cn(
           "flex items-center px-2 py-2 text-base font-medium rounded-md group",
           isActive
-            ? "bg-primary-50 text-primary-700"
-            : "text-secondary-700 hover:bg-secondary-50 hover:text-primary-700"
+            ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground"
+            : "text-foreground hover:bg-muted hover:text-primary dark:hover:text-primary-foreground"
         )}
       >
-        <div className={cn("mr-3", isActive ? "text-primary-500" : "text-secondary-500 group-hover:text-primary-500")}>
+        <div className={cn(
+          "mr-3", 
+          isActive 
+            ? "text-primary dark:text-primary-foreground" 
+            : "text-muted-foreground group-hover:text-primary dark:group-hover:text-primary-foreground"
+        )}>
           {icon}
         </div>
         <span>{children}</span>
@@ -51,28 +56,28 @@ export default function ClientSidebar() {
   const sidebarItems = [
     { href: "/client/dashboard", icon: <LayoutDashboard size={20} />, text: "Dashboard" },
     { href: "/client/projects", icon: <GitBranch size={20} />, text: "My Projects" },
-    { href: "/client/invoices", icon: <FileInvoice size={20} />, text: "Invoices" },
+    { href: "/client/invoices", icon: <Receipt size={20} />, text: "Invoices" },
     { href: "/client/documents", icon: <FileText size={20} />, text: "Documents" },
     { href: "/client/support", icon: <Headphones size={20} />, text: "Support" },
     { href: "/client/profile", icon: <UserCircle size={20} />, text: "My Profile" },
   ];
 
   return (
-    <div className="w-64 bg-white shadow-md z-10 border-r border-secondary-200 flex flex-col h-full">
-      <div className="px-6 pt-8 pb-6 border-b border-secondary-200">
+    <div className="w-64 bg-card shadow-md z-10 border-r border-border flex flex-col h-full">
+      <div className="px-6 pt-8 pb-6 border-b border-border">
         <div className="flex items-center space-x-3">
           {isLoading ? (
-            <div className="h-8 w-8 rounded bg-gray-200 animate-pulse"></div>
+            <div className="h-8 w-8 rounded bg-muted animate-pulse"></div>
           ) : companyLogo ? (
             <img src={companyLogo} className="h-8 w-8 rounded" alt="Company Logo" />
           ) : (
-            <div className="h-8 w-8 rounded bg-primary-600 flex items-center justify-center text-white">
+            <div className="h-8 w-8 rounded bg-primary flex items-center justify-center text-primary-foreground">
               <span className="font-semibold">{companyName.charAt(0)}</span>
             </div>
           )}
-          <span className="text-primary-700 font-bold text-lg">
+          <span className="text-foreground font-bold text-lg">
             {isLoading ? (
-              <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-5 w-32 bg-muted rounded animate-pulse"></div>
             ) : (
               companyName
             )}

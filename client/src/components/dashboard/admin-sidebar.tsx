@@ -95,7 +95,7 @@ export default function AdminSidebar() {
               onLoad={() => console.log("Logo loaded successfully in admin sidebar:", companyLogo)}
             />
           ) : (
-            <div className="h-8 w-8 rounded bg-primary flex items-center justify-center text-white">
+            <div className="h-8 w-8 rounded bg-primary flex items-center justify-center text-primary-foreground">
               <span className="font-semibold">{companyName.charAt(0)}</span>
             </div>
           )}

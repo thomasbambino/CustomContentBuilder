@@ -90,14 +90,14 @@ export default function ProjectsTable({
     switch (status.toLowerCase()) {
       case "in_progress":
       case "in progress":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">In Progress</Badge>;
+        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 hover:bg-green-100 dark:hover:bg-green-900">In Progress</Badge>;
       case "planning":
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Planning</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100 hover:bg-yellow-100 dark:hover:bg-yellow-900">Planning</Badge>;
       case "on_hold":
       case "on hold":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">On Hold</Badge>;
+        return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100 hover:bg-blue-100 dark:hover:bg-blue-900">On Hold</Badge>;
       case "completed":
-        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">Completed</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Completed</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -156,14 +156,14 @@ export default function ProjectsTable({
                     <div className="flex justify-end space-x-2">
                       <Button 
                         variant="link" 
-                        className="text-primary-600 hover:text-primary-900"
+                        className="text-primary hover:text-primary/80"
                         onClick={() => onView && onView(project.id)}
                       >
                         View
                       </Button>
                       <Button 
                         variant="link" 
-                        className="text-primary-600 hover:text-primary-900"
+                        className="text-primary hover:text-primary/80"
                         onClick={() => onEdit && onEdit(project.id)}
                       >
                         Edit
@@ -190,7 +190,7 @@ export default function ProjectsTable({
         )}
       </div>
       {viewAllLink && (
-        <div className="bg-gray-50 px-5 py-3">
+        <div className="bg-muted/30 dark:bg-muted/20 px-5 py-3 border-t border-border">
           <div className="text-sm">
             <a 
               href={viewAllLink}
@@ -200,7 +200,7 @@ export default function ProjectsTable({
                   onViewAll();
                 }
               }}
-              className="font-medium text-primary-600 hover:text-primary-500"
+              className="font-medium text-primary hover:text-primary/80"
             >
               View all projects <span aria-hidden="true">&rarr;</span>
             </a>
