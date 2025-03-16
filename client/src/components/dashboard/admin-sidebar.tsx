@@ -31,16 +31,21 @@ function SidebarItem({ href, icon, children, badge, isActive }: SidebarItemProps
         className={cn(
           "flex items-center px-2 py-2 text-base font-medium rounded-md group",
           isActive
-            ? "bg-primary/10 text-primary"
-            : "text-foreground hover:bg-muted hover:text-primary"
+            ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground"
+            : "text-foreground hover:bg-muted hover:text-primary dark:hover:text-primary-foreground"
         )}
       >
-        <div className={cn("mr-3", isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary")}>
+        <div className={cn(
+          "mr-3", 
+          isActive 
+            ? "text-primary dark:text-primary-foreground" 
+            : "text-muted-foreground group-hover:text-primary dark:group-hover:text-primary-foreground"
+        )}>
           {icon}
         </div>
         <span>{children}</span>
         {badge && badge > 0 && (
-          <span className="ml-auto bg-primary/10 text-primary py-0.5 px-2 rounded-full text-xs">
+          <span className="ml-auto bg-primary/10 text-primary dark:bg-primary/30 dark:text-primary-foreground py-0.5 px-2 rounded-full text-xs">
             {badge}
           </span>
         )}

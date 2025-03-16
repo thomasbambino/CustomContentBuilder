@@ -63,14 +63,14 @@ export default function ProjectsTable({
     const description = (project.description || "").toLowerCase();
     
     if (name.includes("web") || name.includes("website") || description.includes("web")) {
-      return <Code className="text-primary-600" />;
+      return <Code className="text-primary dark:text-primary-foreground" />;
     } else if (name.includes("mobile") || name.includes("app") || description.includes("mobile")) {
-      return <Smartphone className="text-indigo-600" />;
+      return <Smartphone className="text-indigo-600 dark:text-indigo-400" />;
     } else if (name.includes("data") || name.includes("migration") || description.includes("database")) {
-      return <Database className="text-purple-600" />;
+      return <Database className="text-purple-600 dark:text-purple-400" />;
     }
     
-    return <Code className="text-primary-600" />;
+    return <Code className="text-primary dark:text-primary-foreground" />;
   };
   
   // Format date
@@ -104,14 +104,14 @@ export default function ProjectsTable({
   };
   
   return (
-    <div className="bg-white shadow rounded-lg">
-      <div className="px-5 py-4 border-b border-gray-200">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">{title}</h3>
+    <div className="bg-card shadow rounded-lg border border-border">
+      <div className="px-5 py-4 border-b border-border">
+        <h3 className="text-lg leading-6 font-medium text-foreground">{title}</h3>
       </div>
       <div className="overflow-x-auto">
         {projects.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-sm text-gray-500">No projects found</p>
+            <p className="text-sm text-muted-foreground">No projects found</p>
           </div>
         ) : (
           <Table>
@@ -130,26 +130,26 @@ export default function ProjectsTable({
                 <TableRow key={project.id}>
                   <TableCell>
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 bg-primary-100 rounded-md flex items-center justify-center">
+                      <div className="flex-shrink-0 h-10 w-10 bg-primary/10 dark:bg-primary/20 rounded-md flex items-center justify-center">
                         {getProjectIcon(project)}
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{project.name}</div>
-                        <div className="text-sm text-gray-500">#{`PRJ-${project.id.toString().padStart(5, '0')}`}</div>
+                        <div className="text-sm font-medium text-foreground">{project.name}</div>
+                        <div className="text-sm text-muted-foreground">#{`PRJ-${project.id.toString().padStart(5, '0')}`}</div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm text-gray-900">{project.clientName || "N/A"}</div>
-                    <div className="text-sm text-gray-500">{project.contactPerson || "N/A"}</div>
+                    <div className="text-sm text-foreground">{project.clientName || "N/A"}</div>
+                    <div className="text-sm text-muted-foreground">{project.contactPerson || "N/A"}</div>
                   </TableCell>
                   <TableCell>
                     {getStatusBadge(project.status)}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-sm text-muted-foreground">
                     {formatDate(project.dueDate)}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-sm text-muted-foreground">
                     {formatCurrency(project.budget)}
                   </TableCell>
                   <TableCell className="text-right text-sm font-medium">
