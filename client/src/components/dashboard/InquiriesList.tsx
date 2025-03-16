@@ -53,11 +53,11 @@ export default function InquiriesList({
   };
   
   return (
-    <div className="bg-white shadow rounded-lg h-full">
-      <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">{title}</h3>
+    <div className="bg-card shadow rounded-lg h-full border">
+      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+        <h3 className="text-lg leading-6 font-medium text-foreground">{title}</h3>
         {inquiries.length > 0 && (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">
             {inquiries.length} new
           </span>
         )}
@@ -66,26 +66,26 @@ export default function InquiriesList({
         <div className="overflow-hidden">
           {inquiries.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-sm text-gray-500">No pending inquiries</p>
+              <p className="text-sm text-muted-foreground">No pending inquiries</p>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-200">
+            <ul className="divide-y divide-border">
               {inquiries.map((inquiry) => (
                 <li key={inquiry.id} className="py-4">
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0">
-                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
                         <span>{getInitials(inquiry.name)}</span>
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-foreground truncate">
                         {inquiry.name}
                       </p>
-                      <p className="text-sm text-gray-500 truncate">
+                      <p className="text-sm text-muted-foreground truncate">
                         {inquiry.message}
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-muted-foreground/70 mt-1">
                         {formatSubmissionTime(inquiry.createdAt)}
                       </p>
                     </div>
@@ -93,7 +93,7 @@ export default function InquiriesList({
                       <Button
                         variant="default"
                         size="sm"
-                        className="bg-green-500 hover:bg-green-600"
+                        className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
                         onClick={() => onApprove && onApprove(inquiry.id)}
                       >
                         <Check className="h-4 w-4 mr-1" /> Approve
@@ -134,7 +134,7 @@ export default function InquiriesList({
                   onViewAll();
                 }
               }}
-              className="text-sm font-medium text-primary-600 hover:text-primary-500"
+              className="text-sm font-medium text-primary hover:text-primary/80"
             >
               View all inquiries <span aria-hidden="true">&rarr;</span>
             </a>

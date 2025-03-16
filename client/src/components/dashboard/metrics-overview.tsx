@@ -1,12 +1,6 @@
-import { ArrowUpIcon, ArrowDownIcon, Equals } from "lucide-react";
+import { ArrowUp, ArrowDown, Equal, Users, GitBranch, FileText, Inbox, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import {
-  UsersIcon,
-  GitBranchIcon,
-  FileInvoiceDollarIcon,
-  InboxIcon,
-} from "lucide-react";
 
 interface MetricCardProps {
   title: string;
@@ -25,33 +19,33 @@ function MetricCard({ title, value, change, icon, description }: MetricCardProps
     <Card>
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-secondary-500 text-sm font-medium">{title}</h3>
-          <span className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
+          <h3 className="text-muted-foreground text-sm font-medium">{title}</h3>
+          <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
             {icon}
           </span>
         </div>
         <div className="flex items-baseline">
-          <p className="text-2xl font-semibold text-secondary-800">{value}</p>
+          <p className="text-2xl font-semibold text-foreground">{value}</p>
           <p
             className={`ml-2 text-xs font-medium flex items-center ${
               change.isNeutral
-                ? "text-yellow-600"
+                ? "text-yellow-600 dark:text-yellow-400"
                 : change.isIncrease
-                ? "text-green-600"
-                : "text-red-600"
+                ? "text-green-600 dark:text-green-400"
+                : "text-red-600 dark:text-red-400"
             }`}
           >
             {change.isNeutral ? (
-              <Equals className="mr-1 h-3 w-3" />
+              <Equal className="mr-1 h-3 w-3" />
             ) : change.isIncrease ? (
-              <ArrowUpIcon className="mr-1 h-3 w-3" />
+              <ArrowUp className="mr-1 h-3 w-3" />
             ) : (
-              <ArrowDownIcon className="mr-1 h-3 w-3" />
+              <ArrowDown className="mr-1 h-3 w-3" />
             )}
             <span>{change.value}%</span>
           </p>
         </div>
-        <p className="text-xs text-secondary-500 mt-1">{description || "From previous month"}</p>
+        <p className="text-xs text-muted-foreground mt-1">{description || "From previous month"}</p>
       </CardContent>
     </Card>
   );
@@ -59,17 +53,17 @@ function MetricCard({ title, value, change, icon, description }: MetricCardProps
 
 export default function MetricsOverview() {
   // Get clients count
-  const { data: clients = [] } = useQuery({
+  const { data: clients = [] } = useQuery<any[]>({
     queryKey: ["/api/clients"],
   });
 
   // Get projects count
-  const { data: projects = [] } = useQuery({
+  const { data: projects = [] } = useQuery<any[]>({
     queryKey: ["/api/projects"],
   });
 
   // Get invoices count with pending status
-  const { data: invoices = [] } = useQuery({
+  const { data: invoices = [] } = useQuery<any[]>({
     queryKey: ["/api/invoices"],
   });
   const pendingInvoices = invoices.filter((invoice: any) => invoice.status === "pending");
@@ -81,7 +75,7 @@ export default function MetricsOverview() {
   }, 0);
 
   // Get pending inquiries count
-  const { data: pendingInquiries = [] } = useQuery({
+  const { data: pendingInquiries = [] } = useQuery<any[]>({
     queryKey: ["/api/inquiries/pending"],
   });
 
@@ -91,25 +85,25 @@ export default function MetricsOverview() {
         title="Total Clients"
         value={clients.length}
         change={{ value: 8, isIncrease: true }}
-        icon={<UsersIcon size={18} />}
+        icon={<Users size={18} />}
       />
       <MetricCard
         title="Active Projects"
         value={projects.filter((p: any) => p.status === "in_progress").length}
         change={{ value: 12, isIncrease: true }}
-        icon={<GitBranchIcon size={18} />}
+        icon={<GitBranch size={18} />}
       />
       <MetricCard
         title="Pending Invoices"
         value={`$${pendingInvoicesTotal.toFixed(2)}`}
         change={{ value: 0, isIncrease: false, isNeutral: true }}
-        icon={<FileInvoiceDollarIcon size={18} />}
+        icon={<DollarSign size={18} />}
       />
       <MetricCard
         title="New Inquiries"
         value={pendingInquiries.length}
         change={{ value: 10, isIncrease: false }}
-        icon={<InboxIcon size={18} />}
+        icon={<Inbox size={18} />}
       />
     </div>
   );

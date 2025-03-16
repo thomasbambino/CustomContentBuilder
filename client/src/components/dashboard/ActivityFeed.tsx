@@ -35,24 +35,24 @@ export default function ActivityFeed({
   // Get icon based on action or entity type
   const getActivityIcon = (activity: Activity) => {
     // Default color is gray
-    let iconColor = "bg-gray-400";
+    let iconColor = "bg-gray-400 dark:bg-gray-600";
     let icon = <RefreshCw className="h-4 w-4 text-white" />;
     
     // Set icon based on activity type
     if (activity.action.includes("Project")) {
-      iconColor = "bg-primary-500";
-      icon = <Briefcase className="h-4 w-4 text-white" />;
+      iconColor = "bg-primary dark:bg-primary/80";
+      icon = <Briefcase className="h-4 w-4 text-primary-foreground" />;
     } else if (activity.action.includes("Client") || activity.action.includes("User")) {
-      iconColor = "bg-green-500";
+      iconColor = "bg-green-500 dark:bg-green-600";
       icon = <UserPlus className="h-4 w-4 text-white" />;
     } else if (activity.action.includes("Invoice")) {
-      iconColor = "bg-yellow-500";
+      iconColor = "bg-yellow-500 dark:bg-yellow-600";
       icon = <FileText className="h-4 w-4 text-white" />;
     } else if (activity.action.includes("Document")) {
-      iconColor = "bg-blue-500";
+      iconColor = "bg-blue-500 dark:bg-blue-600";
       icon = <FileUp className="h-4 w-4 text-white" />;
     } else if (activity.action.includes("Login") || activity.action.includes("Logout")) {
-      iconColor = "bg-purple-500";
+      iconColor = "bg-purple-500 dark:bg-purple-600";
       icon = <User className="h-4 w-4 text-white" />;
     }
     
