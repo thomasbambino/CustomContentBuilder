@@ -31,16 +31,16 @@ function SidebarItem({ href, icon, children, badge, isActive }: SidebarItemProps
         className={cn(
           "flex items-center px-2 py-2 text-base font-medium rounded-md group",
           isActive
-            ? "bg-primary-50 text-primary-700"
-            : "text-secondary-700 hover:bg-secondary-50 hover:text-primary-700"
+            ? "bg-primary/10 text-primary"
+            : "text-foreground hover:bg-muted hover:text-primary"
         )}
       >
-        <div className={cn("mr-3", isActive ? "text-primary-500" : "text-secondary-500 group-hover:text-primary-500")}>
+        <div className={cn("mr-3", isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary")}>
           {icon}
         </div>
         <span>{children}</span>
         {badge && badge > 0 && (
-          <span className="ml-auto bg-primary-100 text-primary-800 py-0.5 px-2 rounded-full text-xs">
+          <span className="ml-auto bg-primary/10 text-primary py-0.5 px-2 rounded-full text-xs">
             {badge}
           </span>
         )}
@@ -73,11 +73,11 @@ export default function AdminSidebar() {
   ];
 
   return (
-    <div className="w-64 bg-white shadow-md z-10 border-r border-secondary-200 flex flex-col h-full">
-      <div className="px-6 pt-8 pb-6 border-b border-secondary-200">
+    <div className="w-64 bg-card shadow-md z-10 border-r border-border flex flex-col h-full">
+      <div className="px-6 pt-8 pb-6 border-b border-border">
         <div className="flex items-center space-x-3">
           {isLoading ? (
-            <div className="h-8 w-8 rounded bg-gray-200 animate-pulse"></div>
+            <div className="h-8 w-8 rounded bg-muted animate-pulse"></div>
           ) : companyLogo ? (
             <img 
               src={companyLogo} 
@@ -90,13 +90,13 @@ export default function AdminSidebar() {
               onLoad={() => console.log("Logo loaded successfully in admin sidebar:", companyLogo)}
             />
           ) : (
-            <div className="h-8 w-8 rounded bg-primary-600 flex items-center justify-center text-white">
+            <div className="h-8 w-8 rounded bg-primary flex items-center justify-center text-white">
               <span className="font-semibold">{companyName.charAt(0)}</span>
             </div>
           )}
-          <span className="text-primary-700 font-bold text-lg">
+          <span className="text-foreground font-bold text-lg">
             {isLoading ? (
-              <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-5 w-32 bg-muted rounded animate-pulse"></div>
             ) : (
               companyName
             )}
@@ -122,9 +122,9 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Mobile Navigation Toggle */}
-      <div className="border-t border-secondary-200 p-4 md:hidden">
+      <div className="border-t border-border p-4 md:hidden">
         <button
-          className="flex items-center justify-between w-full text-secondary-700 hover:text-primary-700"
+          className="flex items-center justify-between w-full text-foreground hover:text-primary"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           <span className="font-medium">Menu</span>
@@ -138,7 +138,7 @@ export default function AdminSidebar() {
 
       {/* Mobile Navigation Menu */}
       {isMobileMenuOpen && (
-        <nav className="px-4 py-2 border-t border-secondary-200 md:hidden">
+        <nav className="px-4 py-2 border-t border-border md:hidden">
           <div className="space-y-1">
             {sidebarItems.map((item) => (
               <SidebarItem

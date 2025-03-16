@@ -45,24 +45,24 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
     : "AU";
 
   return (
-    <header className="bg-white shadow-sm z-10 border-b border-secondary-200">
+    <header className="bg-background shadow-sm z-10 border-b border-border">
       <div className="flex items-center justify-between px-6 py-3">
-        <h1 className="text-2xl font-semibold text-secondary-800">{title}</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
         <div className="flex items-center space-x-4">
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
-                <BellIcon className="h-5 w-5 text-secondary-500" />
+                <BellIcon className="h-5 w-5 text-muted-foreground" />
                 {notifications.length > 0 && (
-                  <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary-600"></span>
+                  <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary"></span>
                 )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-72">
               <div className="flex items-center justify-between px-4 py-2 border-b">
                 <span className="font-semibold">Notifications</span>
-                <span className="text-xs text-secondary-500">
+                <span className="text-xs text-muted-foreground">
                   {notifications.length} new
                 </span>
               </div>
@@ -71,14 +71,14 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
                   <DropdownMenuItem key={notification.id} className="px-4 py-2 cursor-default">
                     <div>
                       <p className="text-sm font-medium">{notification.text}</p>
-                      <p className="text-xs text-secondary-500">{notification.time}</p>
+                      <p className="text-xs text-muted-foreground">{notification.time}</p>
                     </div>
                   </DropdownMenuItem>
                 ))}
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="justify-center">
-                <span className="text-sm text-primary-600">View all notifications</span>
+                <span className="text-sm text-primary">View all notifications</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -88,14 +88,14 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-9 gap-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-primary-600 text-primary-foreground">
+                  <AvatarFallback className="bg-primary text-primary-foreground">
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium text-secondary-700 hidden md:block">
+                <span className="text-sm font-medium text-foreground hidden md:block">
                   {user?.name || "Admin"}
                 </span>
-                <ChevronDownIcon className="h-4 w-4 text-secondary-500" />
+                <ChevronDownIcon className="h-4 w-4 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

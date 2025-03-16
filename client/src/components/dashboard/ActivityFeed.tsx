@@ -66,15 +66,15 @@ export default function ActivityFeed({
   };
   
   return (
-    <div className="bg-white shadow rounded-lg h-full">
-      <div className="px-5 py-4 border-b border-gray-200">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">{title}</h3>
+    <div className="bg-card shadow rounded-lg h-full border">
+      <div className="px-5 py-4 border-b border-border">
+        <h3 className="text-lg leading-6 font-medium text-foreground">{title}</h3>
       </div>
       <div className="p-5">
         <div className="flow-root">
           <ul className="-mb-8">
             {activities.length === 0 ? (
-              <li className="py-4 text-center text-sm text-gray-500">
+              <li className="py-4 text-center text-sm text-muted-foreground">
                 No activity to display
               </li>
             ) : (
@@ -87,28 +87,28 @@ export default function ActivityFeed({
                     <div className="relative pb-8">
                       {!isLast && (
                         <span 
-                          className="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" 
+                          className="absolute top-5 left-5 -ml-px h-full w-0.5 bg-border" 
                           aria-hidden="true"
                         />
                       )}
                       <div className="relative flex items-start space-x-3">
                         <div className="relative">
-                          <div className={`h-10 w-10 rounded-full ${iconColor} flex items-center justify-center ring-8 ring-white`}>
+                          <div className={`h-10 w-10 rounded-full ${iconColor} flex items-center justify-center ring-8 ring-card`}>
                             {icon}
                           </div>
                         </div>
                         <div className="min-w-0 flex-1">
                           <div>
                             <div className="text-sm">
-                              <a href="#" className="font-medium text-gray-900">
+                              <a href="#" className="font-medium text-foreground">
                                 {activity.userName || "System"}
                               </a>
                             </div>
-                            <p className="mt-0.5 text-sm text-gray-500">
+                            <p className="mt-0.5 text-sm text-muted-foreground">
                               {activity.details}
                             </p>
                           </div>
-                          <div className="mt-2 text-sm text-gray-500">
+                          <div className="mt-2 text-sm text-muted-foreground">
                             <p>{formatTime(activity.createdAt)}</p>
                           </div>
                         </div>
@@ -130,7 +130,7 @@ export default function ActivityFeed({
                   onViewAll();
                 }
               }}
-              className="text-sm font-medium text-primary-600 hover:text-primary-500"
+              className="text-sm font-medium text-primary hover:text-primary/80"
             >
               View all activity <span aria-hidden="true">&rarr;</span>
             </a>
