@@ -102,9 +102,9 @@ export default function ClientSidebar() {
       </nav>
 
       {/* Mobile Navigation Toggle */}
-      <div className="border-t border-secondary-200 p-4 md:hidden">
+      <div className="border-t border-border p-4 md:hidden">
         <button
-          className="flex items-center justify-between w-full text-secondary-700 hover:text-primary-700"
+          className="flex items-center justify-between w-full text-foreground hover:text-primary"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           <span className="font-medium">Menu</span>
@@ -118,7 +118,7 @@ export default function ClientSidebar() {
 
       {/* Mobile Navigation Menu */}
       {isMobileMenuOpen && (
-        <nav className="px-4 py-2 border-t border-secondary-200 md:hidden">
+        <nav className="px-4 py-2 border-t border-border md:hidden">
           <div className="space-y-1">
             {sidebarItems.map((item) => (
               <SidebarItem
